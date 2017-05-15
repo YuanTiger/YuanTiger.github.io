@@ -12,7 +12,7 @@ tags:
 5. Android架构
 6. Android动画
 7. [Android事件机制](https://z593492734.github.io/2017/05/03/Android_even_distribution/)
-8. Android消息通讯机制
+8. [Android消息通讯机制](https://z593492734.github.io/2017/05/15/Android-Handler/)
 9. Android数据通传输
 10. Android线程管理
 11. Android内存管理
