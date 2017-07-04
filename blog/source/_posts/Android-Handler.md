@@ -2,6 +2,7 @@
 title: Android_Handler机制
 date: 2017-05-15 14:57:07
 tags:
+   - Android
 ---
 Handler是Android消息通讯当中最常用的方式之一。
 本篇小文将会从Handler的源码角度去浅析Handler。

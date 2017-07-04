@@ -2,6 +2,7 @@
 title: Google I/O 2017 Android
 date: 2017-05-23 18:50:21
 tags:
+   - Google
 ---
 Google I/O 2017已经结束了一周了，这篇小文将简单总结一下Android的变化。
 不得不说，本次I/O大会，Android从主角完美蜕变成了配角。人工智能成为重心。

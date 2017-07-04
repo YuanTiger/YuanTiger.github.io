@@ -2,6 +2,7 @@
 title: 23种设计模式
 date: 2017-05-31 14:52:23
 tags:
+   - 编程思想
 ---
 1. [单例模式](https://z593492734.github.io/2017/05/27/Design-Single/)
 2. [Builder模式]()

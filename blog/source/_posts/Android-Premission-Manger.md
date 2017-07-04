@@ -2,6 +2,7 @@
 title: Android权限管理简单描述
 date: 2017-05-09 18:38:37
 tags:
+   - Android
 ---
 首先安利一个大家都知道的事情，Google推出了[Android开发文档中文版](https://developer.android.google.cn/index.html)。
 还有[谷歌开发者中文博客](http://developers.googleblog.cn/)。

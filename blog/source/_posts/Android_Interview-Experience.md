@@ -2,6 +2,8 @@
 title: Android面试技能点
 date: 2017-05-04 15:51:57
 tags:
+   - Android
+   - Java
 ---
 # 技能点 #
 ### 主要技能 ###
