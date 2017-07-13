@@ -5,7 +5,7 @@ tags:
    - 编程思想
 ---
 1. [单例模式](https://z593492734.github.io/2017/05/27/Design-Single/)
-2. [Builder模式]()
+2. [建造者模式](https://z593492734.github.io/2017/07/05/Design-Builder/)
 3. [原型模式]()
 4. [工厂方法模式]()
 5. [抽象工厂模式]()
