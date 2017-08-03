@@ -1,6 +1,6 @@
 ---
 title: Android面试技能点
-date: 2017-05-04 15:51:57
+date: 2017-07-25 15:51:57
 tags:
    - Android
    - Java
@@ -8,7 +8,7 @@ tags:
 # 技能点 #
 ### 主要技能 ###
 1. [面向对象思想](https://z593492734.github.io/2017/05/08/Java_understanding-OO/)
-2. 设计模式
+2. [设计模式](https://z593492734.github.io/2017/05/31/Design-Catalog/)
 3. 算法基础
 4. Android适配
 5. Android架构
