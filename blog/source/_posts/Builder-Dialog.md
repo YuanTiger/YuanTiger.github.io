@@ -67,7 +67,7 @@ Picasso.with(context)
 所以我就想能不能用上面作为模板，来实现我们的全局Dialog。
 话不多说，说干就干。
 ## 变形 ##
-完整代码我已经上传GitHub，看代码我还是建议各位看官去[我的GitHub](https://github.com/z593492734/Design-Pattern/blob/master/app/src/main/java/com/my/designdemo/builder/dialog/DialogProduct.java)上看，比较整洁。
+完整代码我已经上传GitHub，看代码我还是建议各位看官去[我的GitHub](https://github.com/YuanTiger/Design-Pattern/blob/master/app/src/main/java/com/my/designdemo/builder/dialog/DialogProduct.java)上看，比较整洁。
 最终实现的效果如下：
 ![](http://7xvzby.com1.z0.glb.clouddn.com/dialog_builder_gif.gif)
 首先，让我们来回想一下**建造者模式**的组成：
@@ -293,7 +293,7 @@ DialogProduct.with(this)
 ```
 
 ## 总结 ##
-[DialogProduct的代码我已经上传到了GitHub](https://github.com/z593492734/Design-Pattern/blob/master/app/src/main/java/com/my/designdemo/builder/dialog/DialogProduct.java)，各位看官可以自行食用。
+[DialogProduct的代码我已经上传到了GitHub](https://github.com/YuanTiger/Design-Pattern/blob/master/app/src/main/java/com/my/designdemo/builder/dialog/DialogProduct.java)，各位看官可以自行食用。
 这个Dialog现在也是项目A中的全局Dialog，使用起来也非常方便。
 这里有几个细节可以和各位看官分享一下：
 第一个就是按钮的点击事件设置，我将其与按钮文字内容的设置绑定在一起。因为我认为你设置了按钮，怎么可能会没有点击事件？

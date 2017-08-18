@@ -147,7 +147,7 @@ protected WordDocument clone() {
 ![](http://7xvzby.com1.z0.glb.clouddn.com/design_clone_1.png)
 完美，可以发现在修改完克隆对象之后，最开始的对象已经不会受到影响。
 ## 总结 ##
-[上述演示代码已经上传至GitHub。](https://github.com/z593492734/Design-Pattern)
+[上述演示代码已经上传至GitHub。](https://github.com/YuanTiger/Design-Pattern)
 **原型模式**是非常简单的一个模式，它的核心问题就是对原始对象进行拷贝，在这个模式的使用过程中需要注意一点就是：深、浅拷贝的问题。
 在实际开发过程中，为了减少错误，建议各位读者在使用**原型模式**时尽量使用深拷贝，避免操作副本时影响到原始对象。
 

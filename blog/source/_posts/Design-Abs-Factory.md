@@ -225,7 +225,7 @@ Toast.makeText(this, androidButton1.getButtonName(iOSSystem1), Toast.LENGTH_SHOR
 **抽象工厂模式**与[工厂方法模式](http://www.jianshu.com/p/cf3b3335af4b)的区别也很明显：
 **抽象工厂模式**用来生产一组相互依赖的产品。
 [工厂方法模式](http://www.jianshu.com/p/cf3b3335af4b)用来批量生产一种产品。
-[抽象工厂模式的相关代码已经上传至GitHub](https://github.com/z593492734/Design-Pattern)，需要的同学可以下载参考。
+[抽象工厂模式的相关代码已经上传至GitHub](https://github.com/YuanTiger/Design-Pattern)，需要的同学可以下载参考。
 
 ## 感谢 ##
 

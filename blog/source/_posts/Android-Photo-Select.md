@@ -335,7 +335,7 @@ public class CropBean {
 
 ## 总结 ##
 到此为止，获取图片显示的功能已经完成了。
-[整个项目已经上传至GitHub](https://github.com/z593492734/PhotoGet)，简单总结一下：
+[整个项目已经上传至GitHub](https://github.com/YuanTiger/PhotoGet)，简单总结一下：
 1. 通过相册获取图片的方式有很多，但是在onActivityResult中都是以Uri的方式传递的。
 2. 裁剪功能不是必要的，如果没有裁剪需求可忽略。强烈建议不要将**return-data**设置为true，可能会超出Intent传输大小限制。
 3. 当你的targetSdkVersion>=23时，需要进行[权限管理的升级](http://www.jianshu.com/p/9271efd71450)，当你的targetSdkVersion>=24时，需要进行[FileProvider的适配](http://www.jianshu.com/p/3f9e3fc38eae)。强烈建议进行适配，提升应用的安全性。

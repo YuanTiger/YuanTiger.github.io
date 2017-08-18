@@ -153,9 +153,9 @@ textView.setText(product.toString());
 
 ## 模式变形 ##
 在刚刚接触到Builder模式时，我就发现了于我而言，一个非常巨大的应用场景，完美解决一个让我极其难受的问题。
-[由于篇幅问题，模式变形我决定新起一篇文章中解释](https://z593492734.github.io/2017/07/11/Builder-Dialog/)。
+[由于篇幅问题，模式变形我决定新起一篇文章中解释](https://YuanTiger.github.io/2017/07/11/Builder-Dialog/)。
 ## 总结 ##
-[Demo我已经上传至GitHub，各位看官可自行食用](https://github.com/z593492734/Design-Pattern)。
+[Demo我已经上传至GitHub，各位看官可自行食用](https://github.com/YuanTiger/Design-Pattern)。
 上面的例子，仅仅是个例子，看起来似乎仅仅是增加了工作量。
 但事实并不是这样的，这种写法的扩展性、可读性都是有很大提升的，希望各位看官都可以理解这种**代码思想**。
 还有一点是，**建造者模式**与之后要讲到的**工厂模式**类似，他们都是建造者模式，适用的场景也很相似。

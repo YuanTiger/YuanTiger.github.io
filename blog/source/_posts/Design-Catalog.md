@@ -4,12 +4,12 @@ date: 2017-05-31 14:52:23
 tags:
    - 编程思想
 ---
-1. [单例模式](https://z593492734.github.io/2017/05/27/Design-Single/)
-2. [建造者模式](https://z593492734.github.io/2017/07/05/Design-Builder/)
-3. [原型模式](https://z593492734.github.io/2017/07/15/Design-Clone/)
-4. [工厂方法模式](https://z593492734.github.io/2017/07/24/Design-Factory/)
-5. [抽象工厂模式](https://z593492734.github.io/2017/08/02/Design-Abs-Factory/)
-6. [策略模式]()
+1. [单例模式](https://YuanTiger.github.io/2017/05/27/Design-Single/)
+2. [建造者模式](https://YuanTiger.github.io/2017/07/05/Design-Builder/)
+3. [原型模式](https://YuanTiger.github.io/2017/07/15/Design-Clone/)
+4. [工厂方法模式](https://YuanTiger.github.io/2017/07/24/Design-Factory/)
+5. [抽象工厂模式](https://YuanTiger.github.io/2017/08/02/Design-Abs-Factory/)
+6. [策略模式](https://YuanTiger.github.io/2017/08/02/Design-Strategy/)
 7. [状态模式]()
 8. [责任链模式]()
 9. [解释器模式]()

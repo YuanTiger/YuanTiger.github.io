@@ -159,6 +159,6 @@ et_credit_number.addTextChangedListener(new TextWatcher() {
  这边主要利用了`onTextChanged()`的监听，判断用户操作是删除操作时，保存光标的位置。
 
 ## 小结 ##
-项目我已经上传到了[我的GitHub](https://github.com/z593492734/EditText_Card_Limit)，有兴趣的同学可以去参考一下。
+项目我已经上传到了[我的GitHub](https://github.com/YuanTiger/EditText_Card_Limit)，有兴趣的同学可以去参考一下。
 这个功能的坑远远超出了我的想象，我才不会说这个项目我就运行了100遍而已！
 ![](http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E9%80%80%E5%87%BA%E8%A3%85%E9%80%BC%E7%95%8C.jpg)
