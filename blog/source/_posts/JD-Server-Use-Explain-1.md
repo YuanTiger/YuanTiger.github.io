@@ -2,23 +2,25 @@
 title: 京东云主机使用(1)-使用Java+Tomcat开始开发
 date: 2017-08-24 16:40:03
 tags:
+   - 服务器
+   - SSH
 ---
 ## 前言 ##
-上一章介绍了京东云主机的登录和简单的静态网页配置。
+[上一篇](http://www.jianshu.com/p/7493b1b98c1c)介绍了京东云主机的登录和简单的静态网页配置。
 
-这一章主要讲述服务器开发的环境配置和部署。
+这一篇主要讲述服务器开发环境的配置和部署。
 
 首先，实现服务器开发的语言特别多：Java、PHP、Node.JS、Python等。
 
-这里我选择的是Java+Tomcat。
+这里我选择的是Java+Tomcat+IDEA。
 
-所以本篇文章是围绕着这两者展开的。
+所以本篇文章是围绕着这三者展开的。
 
-并且我们的服务器系统是：Ubuntu 16.04 64。 没看上一章的看官注意了。
+并且我们的服务器系统是：Ubuntu 16.04 64。 没看[上一篇](http://www.jianshu.com/p/7493b1b98c1c)的看官需要了解。
 ## 环境配置 ##
 
 #### Java环境配置 ####
-首先我们先登录我们的服务器：
+首先我们先输入用户名密码登录我们的服务器：
 
 ![登录成功](http://7xvzby.com1.z0.glb.clouddn.com/server/jd_server_use_1.png)
 
@@ -81,7 +83,7 @@ export JAVA_HOME JAVA_BIN JRE_HOME PATH CLASSPATH
 
 接着输入冒号（Shift+；），进入命令模式。
 
-输入wq，然后回车，进行文件的保存并退出Vim。
+输入wq，然后回车，进行文件的保存并退出Vim模式。
 
 至此，Java的环境变量应该已经配置成功，使用命令来刷新环境：
 ```
@@ -142,7 +144,7 @@ service tomcat start
 ```
 验证启动是否成功：
 ```
-ps -ef|grep java
+ps -ef|grep tomcat
 ```
 如果输出内容如下,则代表启动成功：
 ![Tomcat启动成功](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_2.png)
@@ -187,7 +189,7 @@ service tomcat start
 如果你修改了Host-name，记得使用你修改的域名。
 
 至此，我们服务器的环境搭建工作就告一段落了。
-## HelloWorld ##
+## HelloWeb ##
 接下来我们就要开始开发我们的Web项目了！
 
 这里我下载了[IntelliJ IDEA](https://www.jetbrains.com/idea/download/#section=mac)作为我的开发软件。
@@ -206,15 +208,166 @@ Community版是不支持Web开发的。
 
 按照上述步骤开发完成后，我们的HelloWorld就已经在本机完成了。
 
-接着我们要将该项目部署到我们自己的服务器上。
+效果如下：
+
+![localhost:8080](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_6.png)
+
+接着我们要将该项目部署到我们自己的服务器上，让所有人都可以访问！
+
+最基本的方法就是将项目达成War包，将War包上传至Linux服务器的Tomcat/webapps文件夹中。
+
+之后在访问时，Tomcat会自动将War包进行解压。
+
+传输的方法，可以参考上次说到的[Mac向服务器上传文件](http://www.jianshu.com/p/1afd25e7459d)。
+
+Windows的话可以使用Xshell。
+
+这里我们就不做过多介绍了，因为这种方式明显过于繁琐，每次修改项目都要重新生成War包并上传服务器。
+
+我希望我们可以像是在本机调试一样，修改完成后点击运行就可以看到效果。
+
+这就是我们接下来要做的事情。
+
+## Hello 热部署 ##
+我们首先登录自己的Linux服务器，切换到自己的Tomcat的bin目录下：
+```
+ cd /usr/local/tomcat/bin/
+```
+接下来打开VIM模式，开始编辑**catalina.sh**文件：
+```
+vim catalina.sh
+```
+在文件的100行，也就是`# OS specific support.  $var _must_ be set to either true or false.`之上，添加如下代码：
+```
+export CATALINA_OPTS="-Dcom.sun.management.jmxremote 
+-Dcom.sun.management.jmxremote.port=9999 
+-Dcom.sun.management.jmxremote.ssl=false 
+-Dcom.sun.management.jmxremote.authenticate=false 
+-Djava.rmi.server.hostname=116.196.93.148"
+
+export JAVA_OPTS="-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=9999
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false"
+```
+其中要注意的是，hostname为自己的IP地址，两个port设置为和本机不冲突的端口号即可，注意此端口号不是Tomcat的访问端口，要进行区分，比如我设置的就是9999，你也可以选择使用它。
+
+添加修改完成后保存退出，接下来要对自己的IP地址进行映射。先查看自己的用户名：
+```
+uname -n
+```
+将显示出来的用户名进行复制。
+
+接下来打开hosts文件：
+```
+ vim /etc/hosts
+```
+添加如下代码：
+```
+127.0.1.1      复制的用户名
+::1     复制的用户名
+```
+注意不用删除和注释其他映射，只需添加即可。
+
+映射完成后，我们需要重启Tomcat：
+```
+service tomcat stop
+```
+执行完后请确认是否关闭成功：
+```
+ps -ef|grep tomcat
+```
+如果输出
+
+![Tomcat关闭失败](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_2.png)
+
+则代表关闭失败，执行下句命令强制关闭：
+```
+//port为端口号，像上述图片中，端口为2392
+kill -9 port
+```
+接下来启动Tomcat，因为我们修改了**catalina.sh**，所以我们不能使用**startup.sh**来启动Tomcat，需使用：
+
+```
+//注意此时的目录还是在Tomcat/bin目录下
+// > /dev/null 2>&1 &  的含义是不显示启动日志
+sh catalina.sh run > /dev/null 2>&1 &
+```
+确认启动成功：
+```
+ps -ef|grep tomcat
+```
+启动成功后，我们Linux服务器的配置就结束了！
+
+我们回到IDEA中，进行IDEA的配置。
+
+首先打开Configurations：
+
+![Configurations](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_7.png)
+
+接着创建远端Tomcat：
+
+![创建远端Tomcat](http://7xvzby.com1.z0.glb.clouddn.com/jd1_server_use8.png)
+
+接着开始进行远端Tomcat的配置：
+
+![远端Tomcat配置](http://7xvzby.com1.z0.glb.clouddn.com/jd1_server_use_9.png)
+
+SFTP协议配置：
+
+![SFTP协议配置](http://7xvzby.com1.z0.glb.clouddn.com/jd1_server_use_10.png)
+
+接着添加部署项目：
+
+![添加项目](http://7xvzby.com1.z0.glb.clouddn.com/jd1_server_use_11.png)
+
+点击OK进行保存，接着我们选择使用远端Tomcat来部署并运行项目：
+
+![运行项目](http://7xvzby.com1.z0.glb.clouddn.com/jd1_server_use_12.png)
+
+如果出现以下效果：
+
+![运行失败](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_13.png)
+
+代表连接远端失败，请仔细检查你的配置，此过程比较耗时。
+
+运行成功Log如下：
+
+![成功Log](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_14.png)
+
+效果如下：
+
+![成功效果](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_15.png)
+
+注意上图访问的IP，是我们Linux服务器的地址，也就代表我们成功将项目部署到了我们的服务器上。
+
+接着我们修改index.jsp，再次运行项目：
+
+![热部署效果](http://7xvzby.com1.z0.glb.clouddn.com/server/jd1_server_use_16.png)
+
+可以看到我们修改的效果已经成功部署到服务器中。
+
+上文中的IP就是我的服务器IP，大家也可以访问的。
 
 
+## 总结 ##
+至此，我们已经成功使用IDEA+Tomcat+Java实现了项目的开发以及热部署。
 
+接下来就比较自由了，自己的项目就由自己去写了。
 
+可以搭建个人博客，可以搭建资源共享网页等等。
 
+各有各的风格，大家可以自行学习后台开发，搭建过程就不准备再写博客了。
 
+碰巧今天是七夕节，今天看文章的人都是敬业的程序员！
 
+噗哈哈哈，祝大家七夕节开心快乐！
 
+## 感谢 ##
+[搭建JDK+Tomcat](http://wiki.jikexueyuan.com/project/linux/tomcat.html)
 
+[Mac向服务器上传文件](http://www.jianshu.com/p/1afd25e7459d)
 
+[idea部署项目到远程tomcat](http://blog.csdn.net/tianjun2012/article/details/52795202)
 
+[Linux VIM命令使用](http://pizn.github.io/2012/03/03/vim-commonly-used-command.html)
