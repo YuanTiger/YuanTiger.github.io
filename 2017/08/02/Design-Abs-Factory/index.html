@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程思想," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="模式介绍前段时间介绍了工厂方法模式。本次介绍的模式非常容易和工厂方法模式混淆，并且复杂度也有一定的提升，叫做抽象工厂模式。其实在现实生活中，工厂都会生产某一样具体的产品，不存在说抽象的工厂。那么该模式的含义到底是什么呢？抽象工厂模式的出现最早是为了解决不同操作系统下的图形化处理，这就好比iOS中的Button、Android中的Button、WindowPhone中的Button一样，虽然都是Bu">
+<meta name="keywords" content="编程思想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="创建型设计模式-抽象工厂模式">
+<meta property="og:url" content="http://yoursite.com/2017/08/02/Design-Abs-Factory/index.html">
+<meta property="og:site_name" content="孟远">
+<meta property="og:description" content="模式介绍前段时间介绍了工厂方法模式。本次介绍的模式非常容易和工厂方法模式混淆，并且复杂度也有一定的提升，叫做抽象工厂模式。其实在现实生活中，工厂都会生产某一样具体的产品，不存在说抽象的工厂。那么该模式的含义到底是什么呢？抽象工厂模式的出现最早是为了解决不同操作系统下的图形化处理，这就好比iOS中的Button、Android中的Button、WindowPhone中的Button一样，虽然都是Bu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/DesignModel/design_abs_factory_0.png">
+<meta property="og:updated_time" content="2018-08-24T08:29:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="创建型设计模式-抽象工厂模式">
+<meta name="twitter:description" content="模式介绍前段时间介绍了工厂方法模式。本次介绍的模式非常容易和工厂方法模式混淆，并且复杂度也有一定的提升，叫做抽象工厂模式。其实在现实生活中，工厂都会生产某一样具体的产品，不存在说抽象的工厂。那么该模式的含义到底是什么呢？抽象工厂模式的出现最早是为了解决不同操作系统下的图形化处理，这就好比iOS中的Button、Android中的Button、WindowPhone中的Button一样，虽然都是Bu">
+<meta name="twitter:image" content="http://7xvzby.com1.z0.glb.clouddn.com/DesignModel/design_abs_factory_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/02/Design-Abs-Factory/"/>
+
+
+
+
+
+  <title>创建型设计模式-抽象工厂模式 | 孟远</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">孟远</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">每天进步一点点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/02/Design-Abs-Factory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">创建型设计模式-抽象工厂模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-02T13:52:48+08:00">
+                2017-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h2><p>前段时间介绍了<a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>。<br>本次介绍的模式非常容易和<a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>混淆，并且复杂度也有一定的提升，叫做<strong>抽象工厂模式</strong>。<br>其实在现实生活中，工厂都会生产某一样具体的产品，不存在说抽象的工厂。<br>那么该模式的含义到底是什么呢？<br><strong>抽象工厂模式</strong>的出现最早是为了解决不同操作系统下的图形化处理，这就好比iOS中的Button、Android中的Button、WindowPhone中的Button一样，虽然都是Button，但系统的不同，会导致Button也存在差异。<br>这就引出了<strong>抽象工厂模式</strong>的定义：<br>为创建出<strong>一组相互依赖</strong>的对象提供一个封装接口。<br>定义中有几个关键字，需要注意：</p>
+<ul>
+<li>一组：这是和<a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>的重要区别所在，<strong>抽象工厂模式</strong>用于生产多个产品，而不是一个。如果生产一个产品，请使用<a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>或<a href="http://www.jianshu.com/p/07bed15cd13c" target="_blank" rel="noopener">建造者模式</a>。</li>
+<li>相互依赖：生产出一组产品之后，这组产品<strong>一定</strong>是相互依赖的，注意是<strong>一定</strong>。就好比上面的例子中，Android系统能使用iOS系统的Button吗？答案是否定的，因为iOS的Button依赖于iOS系统。</li>
+</ul>
+<p>解释完名词，想必大家对<strong>抽象工厂模式</strong>的使用场景就有了一些认知：<br>当产品很多，并且有特定的关联可以进行抽象，就可以使用<strong>抽象工厂模式</strong>。</p>
+<h2 id="模式构成"><a href="#模式构成" class="headerlink" title="模式构成"></a>模式构成</h2><p><strong>抽象工厂模式</strong>的主要角色还是4个：</p>
+<ul>
+<li>AbstractFactory：抽象工厂，包含一组产品的生产抽象，<strong>每一个方法都应对应一个产品</strong>。</li>
+<li>ConcreteFactory：抽象工厂实现，应包含生产一组产品的具体实现。</li>
+<li>AbstractProduct：一组产品中的一个产品抽象。</li>
+<li>ConcreteProduct：具体的产品实现。</li>
+</ul>
+<h2 id="模式示例"><a href="#模式示例" class="headerlink" title="模式示例"></a>模式示例</h2><p>现在我们开始实现在上述介绍中提到的例子。<br>我们先来将思路捋一捋：<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/DesignModel/design_abs_factory_0.png" alt="对应关系"></p>
+<ol>
+<li>我们产品包含：操作系统、Button。</li>
+<li>工厂应该生产一组产品，即生产操作系统和Button。</li>
+<li>生产出来的一组产品应相互依赖，并且和另一组产品相互独立。</li>
+</ol>
+<p>接下来，我们就按照思路来实现<strong>抽象工厂模式</strong>。<br>首先我们来初始化抽象产品<strong>AbstractProduct</strong>：<br>操作系统System：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">SystemAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取系统型号</span></span><br><span class="line">    <span class="function">String <span class="title">getSystem</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Button：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">ButtonAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//按钮响应</span></span><br><span class="line">    <span class="function">String <span class="title">getButtonName</span>(<span class="params">SystemAbsProduct system</span>)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以发现，Button与操作系统存在依赖关系，这种依赖关系的体现由开发人员自己来控制，我这里只是个简单实例。<br>两个产品的抽象已经有了，我们先不急着去实现它们。<br>接下来我们来定义抽象工厂AbstractFactory，它应该有两个方法，分别返回系统和Button两个产品：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">AbsFactory</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建操作系统</span></span><br><span class="line">    <span class="function">SystemAbsProduct <span class="title">createSystem</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建Button</span></span><br><span class="line">    <span class="function">ButtonAbsProduct <span class="title">createButton</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>到这里应该都没有什么问题，抽象工厂、抽象产品都已经创建完成了。<br>接下来我们想要分别构建出WindowPhone系统、Android系统、iOS系统下的Button。<br>我们应该能想到，必须要先要有具体的产品，才能用具体工厂来生产。<br>所以接下来，我们要先创建具体的产品：<br>操作系统<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SystemAbsProduct</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取系统型号</span></span><br><span class="line">    <span class="function">String <span class="title">getSystem</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WindowPhone</span> <span class="keyword">implements</span> <span class="title">SystemAbsProduct</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.string.window_phone);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">iOS</span> <span class="keyword">implements</span> <span class="title">SystemAbsProduct</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.string.ios);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Android</span> <span class="keyword">implements</span> <span class="title">SystemAbsProduct</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.string.android);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Button：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">ButtonAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//按钮响应</span></span><br><span class="line">    <span class="function">String <span class="title">getButtonName</span>(<span class="params">SystemAbsProduct system</span>)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">WindowPhoneButton</span> <span class="title">implements</span> <span class="title">ButtonAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getButtonName</span>(<span class="params">SystemAbsProduct system</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (system.getSystem().<span class="keyword">equals</span>(App.context.getString(R.<span class="keyword">string</span>.window_phone))) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"点击了WindowPhone系统的Button"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.<span class="keyword">string</span>.system_error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IOSButton</span> <span class="title">implements</span> <span class="title">ButtonAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getButtonName</span>(<span class="params">SystemAbsProduct system</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (system.getSystem().<span class="keyword">equals</span>(App.context.getString(R.<span class="keyword">string</span>.ios))) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"点击了iOS系统的Button"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.<span class="keyword">string</span>.system_error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AndroidButton</span> <span class="title">implements</span> <span class="title">ButtonAbsProduct</span> &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getButtonName</span>(<span class="params">SystemAbsProduct system</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (system.getSystem().<span class="keyword">equals</span>(App.context.getString(R.<span class="keyword">string</span>.android))) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"点击了Android系统的Button"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> App.context.getString(R.<span class="keyword">string</span>.system_error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因为类的数量庞大，所以我选择使用内部类的形式来实现ConcreteProduct角色。<br>我们可以发现，在Button角色中，我们进行了简单的判断，当操作系统不匹配时，会提示用户，这就类似于运行崩溃的效果。<br>接下来，我们来创建最后一个角色：ConcreteFactory。<br>它应该有多个，每一个负责创建一组具体的产品，也就是说有多少组产品，就应该有多少个具体工厂：<br>WindowPhoneFactory：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WindowPhoneFactory</span> <span class="keyword">implements</span> <span class="title">AbsFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SystemAbsProduct <span class="title">createSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SystemAbsProduct.WindowPhone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ButtonAbsProduct <span class="title">createButton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ButtonAbsProduct.WindowPhoneButton();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>IOSFactory：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IOSFactory</span> <span class="keyword">implements</span> <span class="title">AbsFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SystemAbsProduct <span class="title">createSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SystemAbsProduct.IOS();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ButtonAbsProduct <span class="title">createButton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ButtonAbsProduct.IOSButton();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>AndroidFactory：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AndroidFactory</span> <span class="keyword">implements</span> <span class="title">AbsFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SystemAbsProduct <span class="title">createSystem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SystemAbsProduct.Android();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ButtonAbsProduct <span class="title">createButton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ButtonAbsProduct.AndroidButton();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>三个具体工厂分别具体产生三组相互依赖的产品。<br>至此，简单的<strong>抽象工厂模式</strong>已经构建完成。<br>但是最关键的还是使用，接下来我们来写一些简单的测试代码：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//构建WindowPhone具体工厂</span></span><br><span class="line"><span class="type">AbsFactory</span> iOSFactory = <span class="function"><span class="keyword">new</span> <span class="title">IOSFactory</span>();</span></span><br><span class="line"><span class="function"><span class="comment">//构建操作系统</span></span></span><br><span class="line"><span class="function"><span class="title">SystemAbsProduct</span> <span class="title">iOSSystem</span> = <span class="title">iOSFactory</span>.<span class="title">createSystem</span>();</span></span><br><span class="line"><span class="function"><span class="comment">//构建按钮</span></span></span><br><span class="line"><span class="function"><span class="title">ButtonAbsProduct</span> <span class="title">iOSButton</span> = <span class="title">iOSFactory</span>.<span class="title">createButton</span>();</span></span><br><span class="line"><span class="function"><span class="comment">//调用依赖</span></span></span><br><span class="line"><span class="function"><span class="title">Toast</span>.<span class="title">makeText</span>(this, iOSButton.getButtonName(iOSSystem), <span class="title">Toast</span>.<span class="title">LENGTH_SHORT</span>).<span class="title">show</span>();</span></span><br></pre></td></tr></table></figure></p>
+<p>创建iOS系统工厂，接着创建iOS系统和Button，最后调用Button的点击，会发现成功提示出调用成功。<br>如果我们使用错误的依赖：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">AbsFactory</span> <span class="keyword">androidFactory1 </span>= new <span class="keyword">AndroidFactory();</span></span><br><span class="line"><span class="keyword">SystemAbsProduct </span><span class="keyword">androidSystem1 </span>= <span class="keyword">androidFactory1.createSystem();</span></span><br><span class="line"><span class="keyword">ButtonAbsProduct </span><span class="keyword">androidButton1 </span>= <span class="keyword">androidFactory1.createButton();</span></span><br><span class="line"><span class="keyword">AbsFactory </span>iOSFactory1 = new IOSFactory()<span class="comment">;</span></span><br><span class="line"><span class="symbol">SystemAbsProduct</span> iOSSystem1 = iOSFactory1.createSystem()<span class="comment">;</span></span><br><span class="line"><span class="keyword">ButtonAbsProduct </span>iOSButton1 = iOSFactory1.createButton()<span class="comment">;</span></span><br><span class="line">//使用<span class="keyword">Android的Button时，传入iOS操作系统</span></span><br><span class="line"><span class="keyword">Toast.makeText(this, </span><span class="keyword">androidButton1.getButtonName(iOSSystem1), </span>Toast.LENGTH_SHORT).show()<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>上述演示代码，会提示系统不匹配。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>抽象工厂模式</strong>的最大优势就是分离了接口与实现，客户端使用工厂来创建所需对象，实现面向产品的接口编程，使其在切换产品类时更加灵活、容易。<br>当然缺点也非常明显，一是类文件的增加，二是不太容易扩展产品类，因为每添加一个新产品，都要修改工厂，随之所有工厂实现都要修改。<br><strong>抽象工厂模式</strong>与<a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>的区别也很明显：<br><strong>抽象工厂模式</strong>用来生产一组相互依赖的产品。<br><a href="http://www.jianshu.com/p/cf3b3335af4b" target="_blank" rel="noopener">工厂方法模式</a>用来批量生产一种产品。<br><a href="https://github.com/YuanTiger/Design-Pattern" target="_blank" rel="noopener">抽象工厂模式的相关代码已经上传至GitHub</a>，需要的同学可以下载参考。</p>
+<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><p><a href="https://www.zhihu.com/question/20367734/answer/82361745?from=singlemessage&amp;isappinstalled=0" target="_blank" rel="noopener">抽象工厂模式和工厂模式的区别-caoglish的回答</a></p>
+<p>《Android源码设计模式解析与实战》 何红辉、关爱民 著</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/27/Android-Photo-Select/" rel="next" title="Android获取图片的正确姿势">
+                <i class="fa fa-chevron-left"></i> Android获取图片的正确姿势
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/02/Design-Strategy/" rel="prev" title="实现动态替换-策略模式">
+                实现动态替换-策略模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="孟远" />
+            
+              <p class="site-author-name" itemprop="name">孟远</p>
+              <p class="site-description motion-element" itemprop="description">一名Android开发小将</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/YuanTiger" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mengyuantiger@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/YuanTiger/activities" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-zhihu"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/7b265b275ad0" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-jianshu"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模式介绍"><span class="nav-number">1.</span> <span class="nav-text">模式介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式构成"><span class="nav-number">2.</span> <span class="nav-text">模式构成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式示例"><span class="nav-number">3.</span> <span class="nav-text">模式示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">5.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟远</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

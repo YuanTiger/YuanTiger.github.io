@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程思想," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="模式介绍单例模式是应用最广泛的模式之一。单例模式是为了确保一个类在整个项目中只有一个实例对象。单例模式最大的优势就是可以避免资源的浪费。比如访问IO和数据库等资源时就应考虑使用单例模式。 模式特点 构造方法私有化，使用private来修饰； 确保对象有且只有一个，尤其是在多线程的环境下； 通过静态方法或枚举返回已经实例化好的对象。  模式示例实现单例模式的方式有很多，不过核心是不变的，都要严格遵循">
+<meta name="keywords" content="编程思想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用最广-单例模式">
+<meta property="og:url" content="http://yoursite.com/2017/05/27/Design-Single/index.html">
+<meta property="og:site_name" content="孟远">
+<meta property="og:description" content="模式介绍单例模式是应用最广泛的模式之一。单例模式是为了确保一个类在整个项目中只有一个实例对象。单例模式最大的优势就是可以避免资源的浪费。比如访问IO和数据库等资源时就应考虑使用单例模式。 模式特点 构造方法私有化，使用private来修饰； 确保对象有且只有一个，尤其是在多线程的环境下； 通过静态方法或枚举返回已经实例化好的对象。  模式示例实现单例模式的方式有很多，不过核心是不变的，都要严格遵循">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/design_single_01.png">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/heirenwenhao_2.jpg">
+<meta property="og:updated_time" content="2018-08-24T08:29:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="应用最广-单例模式">
+<meta name="twitter:description" content="模式介绍单例模式是应用最广泛的模式之一。单例模式是为了确保一个类在整个项目中只有一个实例对象。单例模式最大的优势就是可以避免资源的浪费。比如访问IO和数据库等资源时就应考虑使用单例模式。 模式特点 构造方法私有化，使用private来修饰； 确保对象有且只有一个，尤其是在多线程的环境下； 通过静态方法或枚举返回已经实例化好的对象。  模式示例实现单例模式的方式有很多，不过核心是不变的，都要严格遵循">
+<meta name="twitter:image" content="http://7xvzby.com1.z0.glb.clouddn.com/design_single_01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/27/Design-Single/"/>
+
+
+
+
+
+  <title>应用最广-单例模式 | 孟远</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">孟远</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">每天进步一点点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/27/Design-Single/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">应用最广-单例模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-27T10:45:14+08:00">
+                2017-05-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h2><p>单例模式是应用最广泛的模式之一。<br>单例模式是为了确保一个类在整个项目中只有一个实例对象。<br><strong>单例模式最大的优势就是可以避免资源的浪费</strong>。<br>比如访问IO和数据库等资源时就应考虑使用单例模式。</p>
+<h2 id="模式特点"><a href="#模式特点" class="headerlink" title="模式特点"></a>模式特点</h2><ol>
+<li>构造方法私有化，使用<code>private</code>来修饰；</li>
+<li>确保对象有且只有一个，尤其是在多线程的环境下；</li>
+<li>通过静态方法或枚举返回已经实例化好的对象。</li>
+</ol>
+<h2 id="模式示例"><a href="#模式示例" class="headerlink" title="模式示例"></a>模式示例</h2><p>实现单例模式的方式有很多，不过核心是不变的，都要严格遵循单例模式的特点。<br>下面我们来介绍实现单例的方式：</p>
+<ol>
+<li><p>饿汉式</p>
+ <figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 饿汉式 </span>&#123;</span><br><span class="line">    <span class="comment">//自行实例化对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> 饿汉式 ourInstance = <span class="keyword">new</span> 饿汉式();</span><br><span class="line">    <span class="comment">//通过静态方法返回对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> 饿汉式 getInstance() &#123;</span><br><span class="line">        <span class="keyword">return</span> ourInstance;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//构造方法私有化，不能通过new来创建对象</span></span><br><span class="line">    <span class="keyword">private</span> 饿汉式() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>值得一提的是，AndroidStudio在创建类时指定该类为单例的时候，默认就是使用饿汉式：<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/design_single_01.png" alt=""><br>饿汉式写起来非常简单、快捷，但是缺点也显而易见：<br>在类初始化的时候，对象就已经创建好了。<br>如果说我们没有用到该类，就会造成资源的浪费。</p>
+</li>
+<li><p>懒汉式</p>
+ <figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 最简单的懒汉式 </span>&#123;</span><br><span class="line">    <span class="comment">//全项目唯一的对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> 最简单的懒汉式 ourInstance;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造方法私有化</span></span><br><span class="line">    <span class="keyword">private</span> 最简单的懒汉式() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过静态方法来返回对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> 最简单的懒汉式 getInstance() &#123;</span><br><span class="line">        <span class="comment">//在调用该方法时进行判空，在对象为null时创建对象</span></span><br><span class="line">        <span class="keyword">if</span> (ourInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            ourInstance = <span class="keyword">new</span> <span class="type"></span>最简单的懒汉式();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ourInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这就是单例中懒汉式的最基本写法。<br>比起饿汉式，最大的优势就是不会造成资源的浪费。因为只有在用到时，才会进行对象的实例化。<br>但是就上面的写法而言，还存在一个很致命的问题：<br><strong>在多线程同时调用时，会出现多个实例对象的情况</strong>。<br><a href="https://github.com/YuanTiger/Design-Pattern" target="_blank" rel="noopener">Demo</a>里有对应的测试代码，出现的概率很小，但是确实会出现。<br>解决这个问题的方式也很简单，为静态方法添加同步锁：</p>
+ <figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//通过静态方法来返回对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> 同步锁的懒汉式 getInstance() &#123;</span><br><span class="line">     <span class="comment">//在调用该方法时进行判空，在对象为null时创建对象</span></span><br><span class="line">        <span class="keyword">if</span> (ourInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            ourInstance = <span class="keyword">new</span> 同步锁的懒汉式();</span><br><span class="line">        &#125;</span><br><span class="line">         <span class="keyword">return</span> ourInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>synchronized</code>就是同步锁的关键字，加上该关键字，代表着该方法同时只能在唯一的一个线程中运行。<br>比如当10个线程去调用<code>同步锁的懒汉式.getInstance()</code>时，只有当第1个线程完成访问时，第2个线程才会开始执行该方法。当第1个线程访问完成后，单例对象就已经创建完成，所以第2个线程就会直接返回该对象，不会再去创建，这就保证了线程安全。<br>这样确实解决了我们所说的线程安全的问题，但是这种做法明显是低效率的：<br>我们的目的是保证项目中有且只有一个对象，上述代码确实实现了这个目的。但是当对象创建成功后，我们希望多线程访问的时候应该是异步高效、同时执行的的，而不是像上面那样队列式的，我要等你用完我才能用。所以就有了<strong>双重校验锁</strong>的懒汉式：</p>
+ <figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> 同步锁的懒汉式 getInstance() &#123;</span><br><span class="line">    <span class="keyword">if</span> (ourInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">        synchronized (<span class="keyword">new</span> <span class="type">Object</span>()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ourInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">                ourInstance = <span class="keyword">new</span> <span class="type"></span>同步锁的懒汉式()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ourInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种写法可以完美解决多线程效率低下的问题，那么到底是如何解决的？<br><strong>双重校验锁</strong>指的是会进行两次判空操作：</p>
+ <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ourInstance</span> == null</span><br></pre></td></tr></table></figure>
+<p>一次在同步锁外，一次在同步锁内。<br>有的看官就有疑问了：两次判空？<br>首先是<code>synchronized</code>关键字，我们删除了方法的同步锁，将其移动到了方法内部，对</p>
+  <figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ourInstance = <span class="keyword">new</span> <span class="type"></span>同步锁的懒汉式()</span><br></pre></td></tr></table></figure>
+<p>单独加锁。这就代表着我们这个方法本身已经不是线程安全了，会有多个线程同时访问外层的<strong>if</strong>。如果同步锁内部没有判空，就会有多个线程等待对象创建，就会生成多个实例对象。<br>所以<strong>双重校验锁</strong>的每一步都非常关键，必不可少。<br><strong>双重校验锁</strong>的写法主要是为了在多线程创建对象时，用同步锁来保证对象的唯一。当对象创建完成后，同步锁外层的判空操作就不成立了，那么会直接返回对象，整个方法就与同步锁无关，多线程访问时也就不需要等待了。<br><strong>双重校验锁</strong>懒汉式，看起来已经非常完美了！<br>但是，很遗憾。<br>因为JVM存在<strong>指令重排</strong>的优化，又会产生新的问题。<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/heirenwenhao_2.jpg" alt=""><br><strong>指令重排</strong>是JVM为了提高程序运行效率。<br>JVM规范规定，<strong>指令重排序可以在不影响单线程程序执行结果的情况下改变代码执行顺序</strong>。<br>该处会产生<strong>指令重排</strong>的代码是</p>
+ <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ourInstance</span> = new 同步锁的懒汉式()<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>这句代码在JVM看来，主要是做了以下三件事情：<br>（1）给<code>ourInstance</code>分配内存；<br>（2）调用构造方法创建对象，对对象进行初始化；<br>（3）将<code>ourInstance</code>对象指向JVM分配的内存空间（此步完成之后，<code>ourInstance</code>就是非null了）。<br>因为JVM存在<strong>指令重排</strong>，所以在不影响最终结果的情况下，JVM会选择性能最优的的顺序执行：<br>也就是说，上面三件事情，执行的顺序可能是1-2-3，也有可能是1-3-2。<br>1-2-3，1-3-2，有区别吗？<br>在结果上来看，没有任何区别。<br>但是在多线程的情况下，是有风险的：<br>假设线程x的执行顺序是1-3-2，当3执行完成时，<code>ourInstance</code>就已经不为空了，但是2还没有执行完成时，线程y介入了。此时线程y会发现<code>ourInstance</code>已经不为null了，但是其实<code>ourInstance</code>的初始化工作并未完成，这样很明显就会产生异常。<br>解决方法也非常简单，利用<code>volatile</code>关键字即可：</p>
+ <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 完美的懒汉式 &#123;</span></span><br><span class="line">    <span class="comment">//全项目唯一的对象</span></span><br><span class="line">    <span class="comment">//volatile关键字，禁止指令重排</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span>  <span class="keyword">static</span> 完美的懒汉式 ourInstance;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造方法私有化</span></span><br><span class="line">    <span class="keyword">private</span> 完美的懒汉式() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过静态方法来返回对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> 完美的懒汉式 getInstance() &#123;</span><br><span class="line">        <span class="comment">//在调用该方法时进行判空，在对象为null时创建对象</span></span><br><span class="line">        <span class="keyword">if</span> (ourInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (<span class="keyword">new</span> Object()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ourInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">                    ourInstance = <span class="keyword">new</span> 完美的懒汉式();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ourInstance;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码就是一个完美的懒汉式了，利用<code>volatile</code>关键字来禁止JVM的<strong>指令重排</strong>。</p>
+</li>
+<li><p>枚举（Enum）</p>
+ <figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> public <span class="class"><span class="keyword">enum</span> 枚举单例 &#123;</span></span><br><span class="line"></span><br><span class="line">    INSTANCE;</span><br><span class="line">    </span><br><span class="line">    public String getUrl()&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"http://www.baidu.com"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用起来也非常简单：</p>
+ <figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">String url</span> = 枚举单例.INSTANCE.getUrl();</span><br></pre></td></tr></table></figure>
+<p>简直完美啊！简单易用，代码清晰！<br>但是，很少有人选择用枚举单例。<br>可能。。。。。？</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>简单回顾一下：<br>单例模式是保证了一个类在一个项目中有且只有一个实例对象。<br>这样做的目的是为了节省内存的开支。<br>单例模式的写法主要有：</p>
+<ul>
+<li><strong>项目初始化时就创建好的饿汉式</strong></li>
+<li><strong>在第一次使用时才进行创建、但要注意线程安全的懒汉式</strong></li>
+<li><strong>使用非常简单的枚举</strong><br>##<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><a href="http://wuchong.me/blog/2014/08/28/how-to-correctly-write-singleton-pattern/" target="_blank" rel="noopener">Jark’s Blog-如何正确地写出单例模式
+</a><br>《Android源码设计模式解析与实战》 何红辉、关爱民 著</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/23/Google-IO-2017/" rel="next" title="Google I/O 2017 Android">
+                <i class="fa fa-chevron-left"></i> Google I/O 2017 Android
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/31/Design-Catalog/" rel="prev" title="23种设计模式">
+                23种设计模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="孟远" />
+            
+              <p class="site-author-name" itemprop="name">孟远</p>
+              <p class="site-description motion-element" itemprop="description">一名Android开发小将</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/YuanTiger" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mengyuantiger@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/YuanTiger/activities" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-zhihu"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/7b265b275ad0" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-jianshu"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模式介绍"><span class="nav-number">1.</span> <span class="nav-text">模式介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式特点"><span class="nav-number">2.</span> <span class="nav-text">模式特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式示例"><span class="nav-number">3.</span> <span class="nav-text">模式示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">5.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟远</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
