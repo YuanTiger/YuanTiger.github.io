@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,原理," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言很多项目中都会有用户修改头像或者类似的功能。该功能会访问用户的相册、相机来获取图片，然后显示到页面上。实现该功能还是比较简单的，网上的资料也非常多，简单查阅之后复制粘贴便能实现，但是很多细节其实并不理解。并且由于Android安全性的提升，包括Android6.0（API 23）的权限系统升级、Android7.0（API 24）的私有文件访问限制，很多地方稍不注意就会发生崩溃。最近再次用到了">
+<meta name="keywords" content="Android,原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android获取图片的正确姿势">
+<meta property="og:url" content="http://yoursite.com/2017/07/27/Android-Photo-Select/index.html">
+<meta property="og:site_name" content="孟远">
+<meta property="og:description" content="前言很多项目中都会有用户修改头像或者类似的功能。该功能会访问用户的相册、相机来获取图片，然后显示到页面上。实现该功能还是比较简单的，网上的资料也非常多，简单查阅之后复制粘贴便能实现，但是很多细节其实并不理解。并且由于Android安全性的提升，包括Android6.0（API 23）的权限系统升级、Android7.0（API 24）的私有文件访问限制，很多地方稍不注意就会发生崩溃。最近再次用到了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E6%83%A8%E4%B8%8D%E5%BF%8D%E7%9D%B9.png">
+<meta property="og:updated_time" content="2018-08-24T08:29:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android获取图片的正确姿势">
+<meta name="twitter:description" content="前言很多项目中都会有用户修改头像或者类似的功能。该功能会访问用户的相册、相机来获取图片，然后显示到页面上。实现该功能还是比较简单的，网上的资料也非常多，简单查阅之后复制粘贴便能实现，但是很多细节其实并不理解。并且由于Android安全性的提升，包括Android6.0（API 23）的权限系统升级、Android7.0（API 24）的私有文件访问限制，很多地方稍不注意就会发生崩溃。最近再次用到了">
+<meta name="twitter:image" content="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E6%83%A8%E4%B8%8D%E5%BF%8D%E7%9D%B9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/27/Android-Photo-Select/"/>
+
+
+
+
+
+  <title>Android获取图片的正确姿势 | 孟远</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">孟远</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">每天进步一点点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/27/Android-Photo-Select/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android获取图片的正确姿势</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-27T15:55:01+08:00">
+                2017-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>很多项目中都会有用户修改头像或者类似的功能。<br>该功能会访问用户的相册、相机来获取图片，然后显示到页面上。<br>实现该功能还是比较简单的，网上的资料也非常多，简单查阅之后复制粘贴便能实现，但是很多细节其实并不理解。<br>并且由于Android安全性的提升，包括Android6.0（API 23）的权限系统升级、Android7.0（API 24）的私有文件访问限制，很多地方稍不注意就会发生崩溃。<br>最近再次用到了这个功能，这次打算用一篇文章来详细记录这个功能点所对应的知识点，并解决掉之前的很多疑问。</p>
+<h2 id="打开相册"><a href="#打开相册" class="headerlink" title="打开相册"></a>打开相册</h2><p>打开手机相册的方式有多种：<br>第一种：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Intent</span> <span class="keyword">intent</span> = new <span class="keyword">Intent</span>();</span><br><span class="line"><span class="keyword">intent</span>.setAction(<span class="keyword">Intent</span>.ACTION_PICK);</span><br><span class="line">// 设置文件类型</span><br><span class="line"><span class="keyword">intent</span>.setType(<span class="string">"image/*"</span>);</span><br><span class="line">activity.startActivityForResult(<span class="keyword">intent</span>, requestCode);</span><br></pre></td></tr></table></figure></p>
+<p>第二种：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Intent</span> <span class="keyword">intent</span> = new <span class="keyword">Intent</span>();</span><br><span class="line"><span class="keyword">intent</span>.setAction(<span class="keyword">Intent</span>.ACTION_GET_CONTENT);</span><br><span class="line">// 设置文件类型</span><br><span class="line"><span class="keyword">intent</span>.setType(<span class="string">"image/*"</span>);</span><br><span class="line">activity.startActivityForResult(<span class="keyword">intent</span>, requestCode);</span><br></pre></td></tr></table></figure></p>
+<p>第三种：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Intent</span> <span class="keyword">intent</span> = new <span class="keyword">Intent</span>();</span><br><span class="line"><span class="keyword">intent</span>.setAction(<span class="keyword">Intent</span>.ACTION_OPEN_DOCUMENT);</span><br><span class="line">// 设置文件类型</span><br><span class="line"><span class="keyword">intent</span>.setType(<span class="string">"image/*"</span>);</span><br><span class="line">activity.startActivityForResult(<span class="keyword">intent</span>, requestCode);</span><br></pre></td></tr></table></figure></p>
+<p>这几种方式都可以在获取到读取文件权限的前提下，完美实现图片选择。<br>第三种<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_OPEN_DOCUMENT" target="_blank" rel="noopener">ACTION_OPEN_DOCUMENT</a>是在Android5.0(API 19)之后新添加的意图，如果使用的话需要进行<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">if</span><span class="params">(Build.VERSION.SDK_INT&gt;=Build.VERSION_CODES.KITKAT)</span></span>&#123;</span><br><span class="line">	<span class="comment">//TODO</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们这里先不介绍<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_OPEN_DOCUMENT" target="_blank" rel="noopener">ACTION_OPEN_DOCUMENT</a>。<br>第二种<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>与第一种<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK" target="_blank" rel="noopener">ACTION_PICK</a>这两个意图类型的作用也非常类似，都是用来获取手机内容，包括联系人、相册等。<br>通过<code>intent.setType(&quot;image/*&quot;)</code>来指定<strong>MIME Type</strong>，让系统知道要打开的应用。<br>这里需要注意，必须指定<strong>MIME Type</strong>，否则项目会崩溃：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">android<span class="selector-class">.content</span><span class="selector-class">.ActivityNotFoundException</span>: No Activity found to handle Intent &#123; act=android<span class="selector-class">.intent</span><span class="selector-class">.action</span><span class="selector-class">.GET_CONTENT</span> &#125;</span><br><span class="line">android<span class="selector-class">.content</span><span class="selector-class">.ActivityNotFoundException</span>: No Activity found to handle Intent &#123; act=android<span class="selector-class">.intent</span><span class="selector-class">.action</span><span class="selector-class">.ACTION_PICK</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>根据不同的<strong>MIME Type</strong>，可以跳转到不同的应用。<br>那么这两者有什么区别呢？<br><a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>与<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK" target="_blank" rel="noopener">ACTION_PICK</a>的官方解释在这里。<br>英语比较差，跟着百度翻译看了半天还是不懂。<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E6%83%A8%E4%B8%8D%E5%BF%8D%E7%9D%B9.png" alt=""><br>英语好的同学可自行食用上面的链接，应该不需要翻墙。<br>两者的区别介绍都写在了<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>，大概是在说：<br>如果你有一些特定的集合（由URI标识）想让用户选择，使用<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK" target="_blank" rel="noopener">ACTION_PICK</a>。<br>如果让用户基于<strong>MIME Type</strong>选择数据，使用<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>。<br>在平局的情况下，建议使用<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>。<br>这个还是需要各位看官自己好好理解，我也没能完全了解两者的使用区别。<br>并且我发现两者返回的Uri格式是不同的：<br><a href="http://www.jianshu.com/p/5572b42fc63f" target="_blank" rel="noopener">关于Android中Uri的介绍，可以参考这篇文章</a>。</p>
+<p>两种意图分别唤起相册后，选择同一张图片的回调，也就是在onActivityResult中接收：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> onActivityResult(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data) &#123;</span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">    <span class="keyword">if</span> (resultCode != RESULT_OK) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">switch</span> (requestCode) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">REQUEST_CODE_ALBUM:</span><span class="comment">//相册</span></span><br><span class="line">            Uri dataUri = data.getData();</span><br><span class="line">            Log.i(<span class="string">"mengyuanuri"</span>,<span class="string">"uri:"</span>+dataUri.getScheme()+<span class="string">":"</span>+dataUri.getSchemeSpecificPart());</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们来看看两个意图类型下选择同一张照片返回的数据：<br><a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>：<br><figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">content:</span>//<span class="keyword">com</span>.android.providers.media.documents/document/image:<span class="number">2116</span></span><br></pre></td></tr></table></figure></p>
+<p><a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK" target="_blank" rel="noopener">ACTION_PICK</a>：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content:<span class="regexp">//m</span>edia<span class="regexp">/external/im</span>ages<span class="regexp">/media/</span><span class="number">2116</span></span><br></pre></td></tr></table></figure></p>
+<p>没有其他的东西，两者都是返回一个Uri。<br>为什么不直接返回给我们图片，而是一个Uri呢？<br><a href="http://blog.csdn.net/wingichoy/article/details/50679322" target="_blank" rel="noopener">因为Intent传输有大小的限制。</a><br>所以我们需要根据Uri来获取到文件的具体路径。<br>但是我们发现，就算是同一张照片，两种意图下，返回的Uri也是不一致的。<br>这主要是因为Uri在Android中的类型也分为很多种，比如这两个意图的Uri种类就不一致。<br>这里就不做赘述了，我们可以通过网上大神封装的解析Uri的方法将它们统一转化成File路径：<br><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getPath( <span class="keyword">final</span> Uri uri) &#123;</span><br><span class="line">        <span class="comment">// DocumentProvider</span></span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT &amp;&amp; DocumentsContract.isDocumentUri(App.context, uri)) &#123;</span><br><span class="line">            <span class="comment">// ExternalStorageProvider</span></span><br><span class="line">            <span class="keyword">if</span> (isExternalStorageDocument(uri)) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> docId = DocumentsContract.getDocumentId(uri);</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span>[] <span class="built_in">split</span> = docId.<span class="built_in">split</span>(<span class="string">":"</span>);</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> type = <span class="built_in">split</span>[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (<span class="string">"primary"</span>.equalsIgnoreCase(type)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Environment.getExternalStorageDirectory() + <span class="string">"/"</span> + <span class="built_in">split</span>[<span class="number">1</span>];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// TODO handle non-primary volumes</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// DownloadsProvider</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (isDownloadsDocument(uri)) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> id = DocumentsContract.getDocumentId(uri);</span><br><span class="line">                <span class="keyword">final</span> Uri contentUri = ContentUris.withAppendedId(</span><br><span class="line">                        Uri.parse(<span class="string">"content://downloads/public_downloads"</span>), Long.valueOf(id));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> getDataColumn(App.context, contentUri, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// MediaProvider</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (isMediaDocument(uri)) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> docId = DocumentsContract.getDocumentId(uri);</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span>[] <span class="built_in">split</span> = docId.<span class="built_in">split</span>(<span class="string">":"</span>);</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> type = <span class="built_in">split</span>[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">                Uri contentUri = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (<span class="string">"image"</span>.equals(type)) &#123;</span><br><span class="line">                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"video"</span>.equals(type)) &#123;</span><br><span class="line">                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"audio"</span>.equals(type)) &#123;</span><br><span class="line">                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span> selection = <span class="string">"_id=?"</span>;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">String</span>[] selectionArgs = <span class="keyword">new</span> <span class="keyword">String</span>[]&#123;</span><br><span class="line">                        <span class="built_in">split</span>[<span class="number">1</span>]</span><br><span class="line">                &#125;;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> getDataColumn(App.context, contentUri, selection, selectionArgs);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// MediaStore (and general)</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"content"</span>.equalsIgnoreCase(uri.getScheme())) &#123;</span><br><span class="line">            <span class="keyword">return</span> getDataColumn(App.context, uri, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// File</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"file"</span>.equalsIgnoreCase(uri.getScheme())) &#123;</span><br><span class="line">            <span class="keyword">return</span> uri.getPath();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用完成后，会发现不同的Uri对应的是同一个文件路径：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/storage/</span>emulated<span class="regexp">/0/</span>temp<span class="regexp">/kouliang_avatar.jpg</span></span><br></pre></td></tr></table></figure></p>
+<p>断点跟进该方法，会发现两个Uri走的是不同的if判断。</p>
+<p>简单来说，三种方法都可以使用，并且三种方法都是在onActivityResult中返回Uri，而不是图片。<br>一般情况使用<a href="https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT" target="_blank" rel="noopener">ACTION_GET_CONTENT</a>的会多一些。</p>
+<h2 id="相机"><a href="#相机" class="headerlink" title="相机"></a>相机</h2><p>打开相机的方式：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//指定相机意图</span><br><span class="line"><span class="keyword">Intent</span> <span class="keyword">intent</span> = new <span class="keyword">Intent</span>(MediaStore.ACTION_IMAGE_CAPTURE);</span><br><span class="line">//设置相片保存的地址</span><br><span class="line"><span class="keyword">intent</span>.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(<span class="keyword">file</span>));</span><br><span class="line">activity.startActivityForResult(<span class="keyword">intent</span>, requestCode);</span><br></pre></td></tr></table></figure></p>
+<p>相机图片的获取方式不同于相册，相机图片获取需要先指定图片的保存路径，在拍摄成功后，我们只需直接去指定路径获取即可:<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch </span>(requestCode) &#123;</span><br><span class="line">    //相册</span><br><span class="line">    case REQUEST_CODE_ALBUM:</span><br><span class="line">        Uri dataUri = <span class="meta">data</span>.getData()<span class="comment">;</span></span><br><span class="line">        Log.i(<span class="string">"mengyuanuri"</span>, <span class="string">"相册uri:"</span> + dataUri.getScheme() + <span class="string">":"</span> + dataUri.getSchemeSpecificPart())<span class="comment">;</span></span><br><span class="line">        <span class="keyword">break;</span></span><br><span class="line"><span class="keyword"> </span>   //相机，注意，相机的回调中Intent为空，不要使用</span><br><span class="line">    case REQUEST_CODE_CAMER:</span><br><span class="line">        File <span class="keyword">bgPath </span>= Constant.<span class="keyword">bgPath;</span></span><br><span class="line"><span class="keyword"> </span>       <span class="keyword">Bitmap </span><span class="keyword">bitmap </span>= <span class="keyword">BitmapFactory.decodeFile(bgPath.getPath());</span></span><br><span class="line"><span class="keyword"> </span>       iv_bg.setImageBitmap(<span class="keyword">bitmap);</span></span><br><span class="line"><span class="keyword"> </span>       <span class="keyword">break;</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>非常简单，在相机回调中去指定路径中读取图片并显示。<br>但是我们应该可以想到，<strong>有些手机没有相机</strong>，也就是没有<a href="https://developer.android.google.cn/reference/android/provider/MediaStore.html#ACTION_IMAGE_CAPTURE" target="_blank" rel="noopener">MediaStore.ACTION_IMAGE_CAPTURE</a>意图对应的应用。<br>如果没有对其进行判断就会抛出<a href="https://developer.android.google.cn/reference/android/content/ActivityNotFoundException.html" target="_blank" rel="noopener">ActivityNotFound</a>的异常。<br>如何解决这个问题：</p>
+<ol>
+<li>try-catch，简单粗暴；</li>
+<li>通过PackageManager去查询<a href="https://developer.android.google.cn/reference/android/provider/MediaStore.html#ACTION_IMAGE_CAPTURE" target="_blank" rel="noopener">MediaStore.ACTION_IMAGE_CAPTURE</a>意图是否存在。</li>
+</ol>
+<p>两种做法都很简单，这里展示如何用PackageManager：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断某个意图是否存在</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> static <span class="built_in">boolean</span> isHaveCame(<span class="built_in">String</span> intentName) &#123;</span><br><span class="line">    PackageManager packageManager = App.context.getPackageManager();</span><br><span class="line">    Intent intent = <span class="literal">new</span> Intent(intentName);</span><br><span class="line">    <span class="built_in">List</span>&lt;ResolveInfo&gt; <span class="built_in">list</span> = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>.size() &gt; <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接着我们运行，十分成功。<br>但是在7.1的虚拟机中，打开相机崩溃了：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android<span class="selector-class">.os</span><span class="selector-class">.FileUriExposedException</span>: file:<span class="comment">///storage/emulated/0/photo_bg.jpg exposed beyond app through ClipData.Item.getUri(</span></span><br><span class="line">    at android<span class="selector-class">.os</span><span class="selector-class">.StrictMode</span><span class="selector-class">.onFileUriExposed</span>(StrictMode<span class="selector-class">.java</span>:<span class="number">1799</span>)</span><br><span class="line">    at android<span class="selector-class">.net</span><span class="selector-class">.Uri</span><span class="selector-class">.checkFileUriExposed</span>(Uri<span class="selector-class">.java</span>:<span class="number">2346</span>)</span><br><span class="line">    at android<span class="selector-class">.content</span><span class="selector-class">.ClipData</span><span class="selector-class">.prepareToLeaveProcess</span>(ClipData<span class="selector-class">.java</span>:<span class="number">845</span>)</span><br><span class="line">    at android<span class="selector-class">.content</span><span class="selector-class">.Intent</span><span class="selector-class">.prepareToLeaveProcess</span>(Intent<span class="selector-class">.java</span>:<span class="number">8941</span>)</span><br><span class="line">    at android<span class="selector-class">.content</span><span class="selector-class">.Intent</span><span class="selector-class">.prepareToLeaveProcess</span>(Intent<span class="selector-class">.java</span>:<span class="number">8926</span>)</span><br><span class="line">    at android<span class="selector-class">.app</span><span class="selector-class">.Instrumentation</span><span class="selector-class">.execStartActivity</span>(Instrumentation<span class="selector-class">.java</span>:<span class="number">1517</span>)</span><br><span class="line">    at android<span class="selector-class">.app</span><span class="selector-class">.Activity</span><span class="selector-class">.startActivityForResult</span>(Activity<span class="selector-class">.java</span>:<span class="number">4225</span>)</span><br><span class="line">    at android<span class="selector-class">.support</span><span class="selector-class">.v4</span><span class="selector-class">.app</span><span class="selector-class">.BaseFragmentActivityJB</span><span class="selector-class">.startActivityForResult</span>(BaseFragmentActivityJB<span class="selector-class">.java</span>:<span class="number">54</span>)</span><br><span class="line">    at android<span class="selector-class">.support</span><span class="selector-class">.v4</span><span class="selector-class">.app</span><span class="selector-class">.FragmentActivity</span><span class="selector-class">.startActivityForResult</span>(FragmentActivity<span class="selector-class">.java</span>:<span class="number">75</span>)</span><br><span class="line">    at android<span class="selector-class">.app</span><span class="selector-class">.Activity</span><span class="selector-class">.startActivityForResult</span>(Activity<span class="selector-class">.java</span>:<span class="number">4183</span>)</span><br><span class="line">    at android<span class="selector-class">.support</span><span class="selector-class">.v4</span><span class="selector-class">.app</span><span class="selector-class">.FragmentActivity</span><span class="selector-class">.startActivityForResult</span>(FragmentActivity<span class="selector-class">.java</span>:<span class="number">708</span>)</span><br><span class="line">    at com<span class="selector-class">.my</span><span class="selector-class">.photoget</span><span class="selector-class">.utils</span><span class="selector-class">.AppUtils</span><span class="selector-class">.startCamer</span>(AppUtils<span class="selector-class">.java</span>:<span class="number">37</span>)</span><br></pre></td></tr></table></figure></p>
+<p>崩溃的主要原因是因为在7.0(API 24)中对文件读取进行了安全性的提升，<a href="http://www.jianshu.com/p/3f9e3fc38eae" target="_blank" rel="noopener">这篇文章详细介绍了解决方案</a>。<br>这里提一下，这和当初Android6.0(API 23)权限管理改版一致，如果<strong>build.gradle</strong>中的<code>targetSdkVersion</code>&lt;23，则会沿用以前的权限管理机制，无需进行权限管理改版，<a href="http://www.jianshu.com/p/9271efd71450" target="_blank" rel="noopener">权限管理详见这篇小文</a>。<br>同理，这里如果你的<code>targetSdkVersion</code>&lt;24的话，则无需进行上述崩溃的适配。<br>但是更新一定是往更好的方向去的，还是建议各位看官及时更新，及时适配，保证<code>targetSdkVersion</code>为最新SDK。</p>
+<h2 id="裁剪"><a href="#裁剪" class="headerlink" title="裁剪"></a>裁剪</h2><p>裁剪功能是可选功能，如果想要对获取到的图片进行裁剪，我们可以继续使用裁剪Intent来对图片进行裁剪：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.android.camera.action.CROP"</span>);</span><br><span class="line"><span class="comment">//设置要裁剪的图片Uri</span></span><br><span class="line">intent.setDataAndType(cropBean.dataUri, <span class="string">"image/*"</span>);</span><br><span class="line"><span class="comment">//配置一系列裁剪参数</span></span><br><span class="line">intent.putExtra(<span class="string">"outputX"</span>, cropBean.outputX);</span><br><span class="line">intent.putExtra(<span class="string">"outputY"</span>, cropBean.outputY);</span><br><span class="line">intent.putExtra(<span class="string">"scale"</span>, cropBean.<span class="built_in">scale</span>);</span><br><span class="line">intent.putExtra(<span class="string">"aspectX"</span>, cropBean.aspectX);</span><br><span class="line">intent.putExtra(<span class="string">"aspectY"</span>, cropBean.aspectY);</span><br><span class="line">intent.putExtra(<span class="string">"outputFormat"</span>, cropBean.outputFormat);</span><br><span class="line">intent.putExtra(<span class="string">"return-data"</span>, cropBean.isReturnData);</span><br><span class="line">intent.putExtra(<span class="string">"output"</span>, cropBean.saveUri);</span><br><span class="line"><span class="comment">//跳转</span></span><br><span class="line">activity.startActivityForResult(intent, requestCode);</span><br></pre></td></tr></table></figure></p>
+<p>裁剪参数的含义可以参考<a href="https://github.com/showdy/Android_Note/blob/master/showdy_note/android/strategy/%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%86%8C%E5%9B%BE%E7%89%87%E6%88%96%E6%8B%8D%E7%85%A7%E5%B9%B6%E8%A3%81%E5%89%AA%E4%B9%8BAndroid_N%E9%80%82%E9%85%8D.md" target="_blank" rel="noopener">这篇文章</a>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">附加选项</th>
+<th style="text-align:center">数据类型</th>
+<th style="text-align:right">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">crop</td>
+<td style="text-align:center">String</td>
+<td style="text-align:right">发送裁剪信号</td>
+</tr>
+<tr>
+<td style="text-align:left">aspectX</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">X方向上的比例</td>
+</tr>
+<tr>
+<td style="text-align:left">aspectY</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">Y方向上的比例</td>
+</tr>
+<tr>
+<td style="text-align:left">outputX</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">裁剪区的宽</td>
+</tr>
+<tr>
+<td style="text-align:left">outputY</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">裁剪区的高</td>
+</tr>
+<tr>
+<td style="text-align:left">scale</td>
+<td style="text-align:center">boolean</td>
+<td style="text-align:right">是否保留比例</td>
+</tr>
+<tr>
+<td style="text-align:left">return-data</td>
+<td style="text-align:center">boolean</td>
+<td style="text-align:right">是否将数据保留在Bitmap中返回</td>
+</tr>
+<tr>
+<td style="text-align:left">data</td>
+<td style="text-align:center">Parcelable</td>
+<td style="text-align:right">相应的Bitmap数据</td>
+</tr>
+<tr>
+<td style="text-align:left">circleCrop</td>
+<td style="text-align:center">String</td>
+<td style="text-align:right">圆形裁剪区域</td>
+</tr>
+<tr>
+<td style="text-align:left">output</td>
+<td style="text-align:center">URI</td>
+<td style="text-align:right">将URI指向相应的file://</td>
+</tr>
+<tr>
+<td style="text-align:left">outputFormat</td>
+<td style="text-align:center">String</td>
+<td style="text-align:right">图片输出格式</td>
+</tr>
+<tr>
+<td style="text-align:left">noFaceDetection</td>
+<td style="text-align:center">boolean</td>
+<td style="text-align:right">是否取消人脸识别</td>
+</tr>
+</tbody>
+</table>
+<p>每个属性的解释都很清晰，这里我将裁剪参数封装为了一个Bean对象：<br><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> class CropBean &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//要裁剪的图片Uri</span></span><br><span class="line">    <span class="keyword">public</span> Uri dataUri;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//裁剪宽度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> outputX;</span><br><span class="line">    <span class="comment">//裁剪高度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> outputY;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//X方向上的比例</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> aspectX;</span><br><span class="line">    <span class="comment">//Y方向上的比例</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> aspectY;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否保留比例</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">boolean</span> <span class="built_in">scale</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否将数据保存在Bitmap中返回</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">boolean</span> isReturnData;</span><br><span class="line">    <span class="comment">//相应的Bitmap数据</span></span><br><span class="line">    <span class="keyword">public</span> Parcelable returnData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果不需要将图片在Bitmap中返回，需要传递保存图片的Uri</span></span><br><span class="line">    <span class="keyword">public</span> Uri saveUri;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//圆形裁剪区域</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">String</span> circleCrop;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//图片输出格式，默认JPEG</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">String</span> outputFormat = Bitmap.CompressFormat.JPEG.toString();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否取消人脸识别</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">boolean</span> noFaceDetection;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据宽高计算裁剪比例</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> caculateAspect() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">scale</span> = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (outputX == outputY) &#123;</span><br><span class="line">            aspectX = <span class="number">1</span>;</span><br><span class="line">            aspectY = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">float</span> proportion = (<span class="built_in">float</span>) outputX / (<span class="built_in">float</span>) outputY;</span><br><span class="line"></span><br><span class="line">        aspectX = (<span class="built_in">int</span>) (proportion * <span class="number">100</span>);</span><br><span class="line">        aspectY = <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关于封装对象中<code>caculateAspect()</code>方法，因为<strong>aspectX</strong>与<strong>aspectY</strong>是用来设定裁剪框宽高比例的，所以我选择在指定完<strong>outputX</strong>与<strong>outputY</strong>（也就是裁剪图片的宽度和高度）之后，直接根据宽高来计算裁剪框的大小。<br><code>caculateAspect()</code>中就是具体的计算过程。<br>还有几个比较重要的参数需要提一下：</p>
+<ul>
+<li><strong>intent.setData(Uri uri)</strong>是必须指定的，它代表着要裁剪的图片的Uri。</li>
+<li><strong>return-data</strong>参数代表是否要返回数据，如果为true，则返回Bitmap对象，如果为false，则会将图片直接保存到另一个参数<strong>output</strong>中。也就是说，当<strong>return-data</strong>为true时，<strong>output</strong>是没有用的，直接在<strong>onActivityResult</strong>中取data当中的Bitmap即可。如果为false，则直接在onActivityResult中去之前指定到<strong>output</strong>中的地址取出图片即可。</li>
+<li>综上一点，强烈建议设置<strong>return-data</strong>为false并且设置<strong>output</strong>，<a href="http://blog.csdn.net/wingichoy/article/details/50679322" target="_blank" rel="noopener">因为Intent传输是有大小限制的</a>。为防止超出大小的现象发生，通过Uri传输最为安全。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到此为止，获取图片显示的功能已经完成了。<br><a href="https://github.com/YuanTiger/PhotoGet" target="_blank" rel="noopener">整个项目已经上传至GitHub</a>，简单总结一下：</p>
+<ol>
+<li>通过相册获取图片的方式有很多，但是在onActivityResult中都是以Uri的方式传递的。</li>
+<li>裁剪功能不是必要的，如果没有裁剪需求可忽略。强烈建议不要将<strong>return-data</strong>设置为true，可能会超出Intent传输大小限制。</li>
+<li>当你的targetSdkVersion&gt;=23时，需要进行<a href="http://www.jianshu.com/p/9271efd71450" target="_blank" rel="noopener">权限管理的升级</a>，当你的targetSdkVersion&gt;=24时，需要进行<a href="http://www.jianshu.com/p/3f9e3fc38eae" target="_blank" rel="noopener">FileProvider的适配</a>。强烈建议进行适配，提升应用的安全性。</li>
+</ol>
+<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><p><a href="https://github.com/showdy/Android_Note/blob/master/showdy_note/android/strategy/%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%86%8C%E5%9B%BE%E7%89%87%E6%88%96%E6%8B%8D%E7%85%A7%E5%B9%B6%E8%A3%81%E5%89%AA%E4%B9%8BAndroid_N%E9%80%82%E9%85%8D.md" target="_blank" rel="noopener">使用系统裁剪</a><br><a href="http://blog.csdn.net/wingichoy/article/details/50679322" target="_blank" rel="noopener">Intent传输大小实战</a><br><a href="http://www.jianshu.com/p/3f9e3fc38eae" target="_blank" rel="noopener">相机7.0图片选择适配</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/原理/" rel="tag"># 原理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/25/Android_Interview-Experience/" rel="next" title="Android面试技能点">
+                <i class="fa fa-chevron-left"></i> Android面试技能点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/02/Design-Abs-Factory/" rel="prev" title="创建型设计模式-抽象工厂模式">
+                创建型设计模式-抽象工厂模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">孟远</p>
+              <p class="site-description motion-element" itemprop="description">一名Android开发小将</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打开相册"><span class="nav-number">2.</span> <span class="nav-text">打开相册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相机"><span class="nav-number">3.</span> <span class="nav-text">相机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#裁剪"><span class="nav-number">4.</span> <span class="nav-text">裁剪</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">6.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟远</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

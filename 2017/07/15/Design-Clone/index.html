@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程思想," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="模式介绍原型模式是一种创建式模式。用户可以从一个样板对象中复制出一个内部属性一致的对象，这个过程也就是我们常说的“克隆”。被复制出的对象就是我们所说的“原型”，这个“原型”是可以进行定制的。原型模式多用于创建复杂、构造耗时的对象，因为在这种情况下，利用原型模式复制一个已经存在的对象可以使程序运行更高效。 应用场景 一个对象初始化时需要消耗非常多的资源； 一个对象需要提供给多个对象访问，并且多个对象">
+<meta name="keywords" content="编程思想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序运行更高效-原型模式">
+<meta property="og:url" content="http://yoursite.com/2017/07/15/Design-Clone/index.html">
+<meta property="og:site_name" content="孟远">
+<meta property="og:description" content="模式介绍原型模式是一种创建式模式。用户可以从一个样板对象中复制出一个内部属性一致的对象，这个过程也就是我们常说的“克隆”。被复制出的对象就是我们所说的“原型”，这个“原型”是可以进行定制的。原型模式多用于创建复杂、构造耗时的对象，因为在这种情况下，利用原型模式复制一个已经存在的对象可以使程序运行更高效。 应用场景 一个对象初始化时需要消耗非常多的资源； 一个对象需要提供给多个对象访问，并且多个对象">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/design_clone_0.png">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/design_clone_1.png">
+<meta property="og:updated_time" content="2018-08-24T08:29:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="程序运行更高效-原型模式">
+<meta name="twitter:description" content="模式介绍原型模式是一种创建式模式。用户可以从一个样板对象中复制出一个内部属性一致的对象，这个过程也就是我们常说的“克隆”。被复制出的对象就是我们所说的“原型”，这个“原型”是可以进行定制的。原型模式多用于创建复杂、构造耗时的对象，因为在这种情况下，利用原型模式复制一个已经存在的对象可以使程序运行更高效。 应用场景 一个对象初始化时需要消耗非常多的资源； 一个对象需要提供给多个对象访问，并且多个对象">
+<meta name="twitter:image" content="http://7xvzby.com1.z0.glb.clouddn.com/design_clone_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/15/Design-Clone/"/>
+
+
+
+
+
+  <title>程序运行更高效-原型模式 | 孟远</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">孟远</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">每天进步一点点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/15/Design-Clone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">程序运行更高效-原型模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-15T14:52:23+08:00">
+                2017-07-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h2><p><strong>原型模式</strong>是一种创建式模式。<br>用户可以从一个样板对象中复制出一个内部属性一致的对象，这个过程也就是我们常说的“克隆”。<br>被复制出的对象就是我们所说的“原型”，这个“原型”是可以进行定制的。<br><strong>原型模式</strong>多用于创建复杂、构造耗时的对象，<strong>因为在这种情况下，利用原型模式复制一个已经存在的对象可以使程序运行更高效</strong>。</p>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li>一个对象初始化时需要消耗非常多的资源；</li>
+<li>一个对象需要提供给多个对象访问，并且多个对象调用时需要进行定制。</li>
+</ul>
+<p>需要注意的是，复制操作并不一定比new快，只有当new对象较为耗时或成本较高时，通过复制才能获得效率上的提升。<br>因此，在使用<strong>原型模式</strong>时需要对对象的构建成本进行一些效率测试。</p>
+<h2 id="简单示例"><a href="#简单示例" class="headerlink" title="简单示例"></a>简单示例</h2><p>如何实现复制操作？<br>非常简单，Java提供了一个叫做<strong>Cloneable</strong>的接口，我们只需实现该接口，重写它的<code>clone()</code>方法即可。<br>现在我们来举个简单实例来演示<strong>原型模式</strong>：<br>假设我们现在有一篇文档对象：<br><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordDocument</span></span>&#123;</span><br><span class="line">    <span class="comment">//文本</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">String</span> text;</span><br><span class="line">    <span class="comment">//作者</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">String</span> author;</span><br><span class="line">    <span class="comment">//图片集合</span></span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;<span class="keyword">String</span>&gt; imageList;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//....省略get、set</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>里面包含了作者、文本以及图片合集，现在我们要让这个文档实现复制功能：<br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> WordDocument <span class="keyword">implements</span> Cloneable &#123;</span><br><span class="line">    <span class="comment">//文本</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">String</span> text;</span><br><span class="line">    <span class="comment">//作者</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">String</span> author;</span><br><span class="line">    <span class="comment">//图片集合</span></span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;<span class="built_in">String</span>&gt; imageList;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> WordDocument clone() &#123;</span><br><span class="line">        WordDocument <span class="built_in">document</span> = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="built_in">document</span> = (WordDocument) <span class="keyword">super</span>.clone();</span><br><span class="line">            <span class="built_in">document</span>.text = <span class="keyword">this</span>.text;</span><br><span class="line">            <span class="built_in">document</span>.author = <span class="keyword">this</span>.author;</span><br><span class="line">            <span class="built_in">document</span>.imageList = <span class="keyword">this</span>.imageList;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">document</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//....省略get、set</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>非常简单，我们让<strong>WordDocument</strong>实现了<strong>Cloneable</strong>接口并重写了<code>clone()</code>方法，在<code>clone()</code>中进行对象的克隆操作。<br>那么接下来我们来实际演示下克隆效果：<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建对象</span></span><br><span class="line">WordDocument <span class="built_in">document</span> = <span class="keyword">new</span> WordDocument();</span><br><span class="line"><span class="built_in">document</span>.setAuthor(<span class="string">"孟远"</span>);</span><br><span class="line"><span class="built_in">document</span>.setText(<span class="string">"这是一篇极好的文章。"</span>);</span><br><span class="line"><span class="built_in">document</span>.addImage(<span class="string">"图0"</span>);</span><br><span class="line"><span class="built_in">document</span>.addImage(<span class="string">"图1"</span>);</span><br><span class="line"><span class="comment">//打印创建的对象</span></span><br><span class="line">tv_clone_0.append(<span class="string">"创建的对象:\n"</span> + <span class="built_in">document</span>.toString());</span><br><span class="line"><span class="comment">//克隆对象</span></span><br><span class="line">WordDocument cloneBean = <span class="built_in">document</span>.clone();</span><br><span class="line"><span class="comment">//打印克隆的对象</span></span><br><span class="line">tv_clone_0.append(<span class="string">"克隆的对象:\n"</span> + cloneBean.toString());</span><br><span class="line"><span class="comment">//修改克隆的对象</span></span><br><span class="line">cloneBean.setAuthor(<span class="string">"黑色小老虎"</span>);</span><br><span class="line">cloneBean.addImage(<span class="string">"新加图片2"</span>);</span><br><span class="line"><span class="comment">//再次打印2个对象</span></span><br><span class="line">tv_clone_0.append(<span class="string">"修改克隆对象:\n"</span> + cloneBean.toString());</span><br><span class="line">tv_clone_0.append(<span class="string">"最开始的对象:\n"</span> + <span class="built_in">document</span>.toString());</span><br></pre></td></tr></table></figure></p>
+<p>这段代码我们创建了一篇文章，之后拷贝了这篇文章并修改了拷贝文章。<br>在这期间，一共进行了4次对象的<code>toString</code>：</p>
+<ol>
+<li>创建对象完成时打印了创建对象；</li>
+<li>拷贝完成时打印了拷贝对象；</li>
+<li>修改拷贝对象完成时打印了拷贝对象；</li>
+<li>最后再次打印最初创建的对象。</li>
+</ol>
+<p>这里请注意，我们修改拷贝对象时，修改了作者姓名并且添加了一张图片。<br>最后打印的结果如下：<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/design_clone_0.png" alt=""><br>细心的同学会发现，我们修改了拷贝对象的作者昵称，原对象没有受到影响。但是我们增加一张图片到拷贝对象的集合中时，原对象也发生了变化。<br>这就牵扯到了<strong>浅拷贝</strong>和<strong>深拷贝</strong>。</p>
+<h2 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h2><p>上述简单实例，是使用了<strong>浅拷贝</strong>来实现的。所谓<strong>浅拷贝</strong>就是直接引用原对象中的嵌套对象，不会去进行创建。<br>大家应该都知道<strong>对象引用</strong>的问题：<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Bean a</span> = new Bean(<span class="string">"孟远"</span>,<span class="string">"23"</span>,<span class="string">"男"</span>);</span><br><span class="line"><span class="attribute">Bean b</span> = a;</span><br></pre></td></tr></table></figure></p>
+<p>此时b对象引用了a对象，也就是说其实a和b两个对象在堆内存中指向的是同一个地址，当修改b时，a也必定跟着发生变化。<br>同理我们再回头重新看下<strong>WordDocument</strong>的<code>clone()</code>代码：<br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> WordDocument clone() &#123;</span><br><span class="line">    WordDocument <span class="built_in">document</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="built_in">document</span> = (WordDocument) <span class="keyword">super</span>.clone();</span><br><span class="line">        <span class="built_in">document</span>.text = <span class="keyword">this</span>.text;</span><br><span class="line">        <span class="built_in">document</span>.author = <span class="keyword">this</span>.author;</span><br><span class="line">        <span class="comment">//问题所在，直接引用当前对象的List</span></span><br><span class="line">        <span class="built_in">document</span>.imageList = <span class="keyword">this</span>.imageList;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">document</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以发现我们直接引用了当前对象的List，导致在内存中拷贝对象和最初对象的List指向了同一个地址。<br>上面代码就是我们口中的<strong>浅拷贝</strong>。<br>那么如何解决这个问题？<br>很简单，使用<strong>深拷贝</strong>，<strong>即内部对象也使用<code>clone()</code>：</strong><br><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> WordDocument clone() &#123;</span><br><span class="line">    WordDocument <span class="built_in">document</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="built_in">document</span> = (WordDocument) <span class="keyword">super</span>.clone();</span><br><span class="line">        <span class="built_in">document</span>.text = <span class="keyword">this</span>.text;</span><br><span class="line">        <span class="built_in">document</span>.author = <span class="keyword">this</span>.author;</span><br><span class="line">        <span class="comment">//关建行</span></span><br><span class="line">        <span class="built_in">document</span>.imageList = (ArrayList&lt;<span class="built_in">String</span>&gt;) imageList.clone();</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">document</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们点进ArrayList的源码可以发现，ArrayList已经实现了<strong>Cloneable</strong>接口，所以我们直接调用ArrayList的<code>clone()</code>即可。<br>修改完这一行代码之后，再次执行上面演示代码：<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/design_clone_1.png" alt=""><br>完美，可以发现在修改完克隆对象之后，最开始的对象已经不会受到影响。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><a href="https://github.com/YuanTiger/Design-Pattern" target="_blank" rel="noopener">上述演示代码已经上传至GitHub。</a><br><strong>原型模式</strong>是非常简单的一个模式，它的核心问题就是对原始对象进行拷贝，在这个模式的使用过程中需要注意一点就是：深、浅拷贝的问题。<br>在实际开发过程中，为了减少错误，建议各位读者在使用<strong>原型模式</strong>时尽量使用深拷贝，避免操作副本时影响到原始对象。</p>
+<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><p>《Android源码设计模式解析与实战》 何红辉、关爱民 著</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/11/Builder-Dialog/" rel="next" title="建造者模式的全局Dialog">
+                <i class="fa fa-chevron-left"></i> 建造者模式的全局Dialog
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/24/Design-Factory/" rel="prev" title="应用最广-工厂方法模式">
+                应用最广-工厂方法模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">孟远</p>
+              <p class="site-description motion-element" itemprop="description">一名Android开发小将</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模式介绍"><span class="nav-number">1.</span> <span class="nav-text">模式介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用场景"><span class="nav-number">2.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单示例"><span class="nav-number">3.</span> <span class="nav-text">简单示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深拷贝"><span class="nav-number">4.</span> <span class="nav-text">深拷贝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">6.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟远</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

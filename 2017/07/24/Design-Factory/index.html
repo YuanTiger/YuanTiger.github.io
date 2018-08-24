@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程思想," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="模式介绍工厂方法模式是应用最广泛的模式之一，也是创建型模式之一。工厂方法模式指的是定义出一个用于创建对象的接口，让子类决定实例化哪个类。听起来可能不太懂，没关系，往下看慢慢就明白了。工厂方法模式是一种结构简单的模式，在我们平时开发中应用非常广泛，也许你并不知道，但你已经使用了无数次该模式。 使用场景在任何需要生成复杂对象的地方，都可以用使用工厂方法模式。简单对象无需使用工厂方法模式，更无需使用建造">
+<meta name="keywords" content="编程思想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用最广-工厂方法模式">
+<meta property="og:url" content="http://yoursite.com/2017/07/24/Design-Factory/index.html">
+<meta property="og:site_name" content="孟远">
+<meta property="og:description" content="模式介绍工厂方法模式是应用最广泛的模式之一，也是创建型模式之一。工厂方法模式指的是定义出一个用于创建对象的接口，让子类决定实例化哪个类。听起来可能不太懂，没关系，往下看慢慢就明白了。工厂方法模式是一种结构简单的模式，在我们平时开发中应用非常广泛，也许你并不知道，但你已经使用了无数次该模式。 使用场景在任何需要生成复杂对象的地方，都可以用使用工厂方法模式。简单对象无需使用工厂方法模式，更无需使用建造">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E9%80%80%E5%87%BA%E8%A3%85%E9%80%BC%E7%95%8C.jpg">
+<meta property="og:updated_time" content="2018-08-24T08:29:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="应用最广-工厂方法模式">
+<meta name="twitter:description" content="模式介绍工厂方法模式是应用最广泛的模式之一，也是创建型模式之一。工厂方法模式指的是定义出一个用于创建对象的接口，让子类决定实例化哪个类。听起来可能不太懂，没关系，往下看慢慢就明白了。工厂方法模式是一种结构简单的模式，在我们平时开发中应用非常广泛，也许你并不知道，但你已经使用了无数次该模式。 使用场景在任何需要生成复杂对象的地方，都可以用使用工厂方法模式。简单对象无需使用工厂方法模式，更无需使用建造">
+<meta name="twitter:image" content="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E9%80%80%E5%87%BA%E8%A3%85%E9%80%BC%E7%95%8C.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/24/Design-Factory/"/>
+
+
+
+
+
+  <title>应用最广-工厂方法模式 | 孟远</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">孟远</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">每天进步一点点</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/24/Design-Factory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">应用最广-工厂方法模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-24T13:57:55+08:00">
+                2017-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h2><p><strong>工厂方法模式</strong>是应用最广泛的模式之一，也是创建型模式之一。<br><strong>工厂方法模式</strong>指的是定义出一个用于创建对象的接口，让子类决定实例化哪个类。听起来可能不太懂，没关系，往下看慢慢就明白了。<br><strong>工厂方法模式</strong>是一种结构简单的模式，在我们平时开发中应用非常广泛，也许你并不知道，但你已经使用了无数次该模式。</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>在任何需要生成复杂对象的地方，都可以用使用<strong>工厂方法模式</strong>。简单对象无需使用<strong>工厂方法模式</strong>，更无需使用<a href="http://www.jianshu.com/p/07bed15cd13c" target="_blank" rel="noopener"><strong>建造者模式</strong></a>，因为这样反而会损失性能。</p>
+<h2 id="模式构成"><a href="#模式构成" class="headerlink" title="模式构成"></a>模式构成</h2><p><strong>工厂方法模式</strong>的成员构成如下：</p>
+<ul>
+<li>Product：商品功能的抽象。</li>
+<li>ConcreteProduct：商品功能的具体实现。</li>
+<li>Factory：生产商品的工厂抽象。</li>
+<li>ConcreteFactory：生产商品的工厂具体实现。</li>
+</ul>
+<p>需要注意的是，<strong>工厂方法模式</strong>中的Product和<a href="http://www.jianshu.com/p/07bed15cd13c" target="_blank" rel="noopener"><strong>建造者模式</strong></a>中的Product是有区别的：<br>前者的Product指的是商品的<strong>功能</strong>，后者指的是商品的<strong>属性</strong>。<br>也就是两者Product中封装的内容是不一致的，是两个完全不同的模式结构。</p>
+<h2 id="模式示例"><a href="#模式示例" class="headerlink" title="模式示例"></a>模式示例</h2><p>如果将汽车的功能抽象出来，其实都是一致的，无非是有些高级功能，有的汽车有，有的汽车没有。<br>但是最基本的功能，比如驾驶、大灯、雨刷等功能，是所有汽车都应该具备的。<br>不过就算是这些都具备的功能，也会因车的品牌、型号的不同，存在差异。<br>这些就是后话了，我们现在就开始用<strong>工厂方法模式</strong>的代码来实现上述示例。<br>先来创建汽车Product，它应该包含汽车所有的功能：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">CarProduct</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 汽车-通用功能封装</span></span><br><span class="line"><span class="comment">     * 开始驾驶</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">drive</span>(<span class="params"></span>)</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 汽车-通用功能封装</span></span><br><span class="line"><span class="comment">     * 打开车的大灯</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">openHeadlamps</span>(<span class="params"></span>)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//....省略其他功能</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，我们的汽车商品包含驾驶以及大灯两个功能。<br>两个最简单的功能，在不同品牌、不同型号的车下都会存在差异：<br>奥迪A6L：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AudiA6L</span> <span class="keyword">implements</span> <span class="title">CarProduct</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">drive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"factory"</span>,<span class="string">"奥迪A6L，平稳起步。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">openHeadlamps</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"factory"</span>,<span class="string">"奥迪A6L，尊享华丽大灯打开！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>奔驰E260L：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BenzE260L</span> <span class="keyword">implements</span> <span class="title">CarProduct</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">drive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"factory"</span>,<span class="string">"奔驰E260L，弹射起步！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">openHeadlamps</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"factory"</span>,<span class="string">"奔驰E260L，标配大灯打开。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们创建了两款汽车，分别去实现了<code>CarProduct</code>，并且实现了各自功能的细节。<br>栗子而已，各位看官可不要因为奔驰E260L能不能弹射起步和我撕啊。<br><img src="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E9%80%80%E5%87%BA%E8%A3%85%E9%80%BC%E7%95%8C.jpg" alt=""><br>如果还有其他类型的汽车，我们只需要接着创建类去实现<code>CarProduct</code>即可。<br>接下来我们就要创建汽车的生产工厂了：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">CarFactory</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建CarProduct</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * @return CarProduct</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> CarProduct <span class="title">createProduct</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出我们的抽象工厂中，返回了<strong>抽象</strong>的商品对象。<br>那么我们应该在工厂实现中，实现创建商品的具体细节：<br>奥迪A6L的工厂：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">AudiA6LFactory</span> <span class="keyword">extends</span> <span class="title">CarFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public <span class="type">CarProduct</span> createProduct() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="type">AudiA6L</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>奔驰E260L的工厂：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">BenzE260LFactory</span> <span class="keyword">extends</span> <span class="title">CarFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public <span class="type">CarProduct</span> createProduct() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="type">BenzE260L</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因为示例比较简单，仅仅是new的操作，实际创建汽车会更复杂一些。<br>接下来我们写一些测试代码：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建奔驰工厂</span></span><br><span class="line"><span class="type">CarFactory</span> carFactory1 = <span class="function"><span class="keyword">new</span> <span class="title">BenzE260LFactory</span>();</span></span><br><span class="line"><span class="function"><span class="title">BenzE260L</span> <span class="title">product1</span> = (<span class="type">BenzE260L</span>) <span class="title">carFactory1</span>.<span class="title">createProduct</span>();</span></span><br><span class="line"><span class="function"><span class="title">product1</span>.<span class="title">drive</span>();</span></span><br><span class="line"><span class="function"><span class="title">product1</span>.<span class="title">openHeadlamps</span>();</span></span><br><span class="line"><span class="function"><span class="comment">//创建奥迪工厂</span></span></span><br><span class="line"><span class="function"><span class="title">CarFactory</span> <span class="title">carFactory2</span> = <span class="title">new</span> <span class="title">AudiA6LFactory</span>();</span></span><br><span class="line"><span class="function"><span class="title">AudiA6L</span> <span class="title">product2</span> = (<span class="type">AudiA6L</span>) <span class="title">carFactory2</span>.<span class="title">createProduct</span>();</span></span><br><span class="line"><span class="function"><span class="title">product2</span>.<span class="title">drive</span>();</span></span><br><span class="line"><span class="function"><span class="title">product2</span>.<span class="title">openHeadlamps</span>();</span></span><br></pre></td></tr></table></figure></p>
+<p>这里注意一点，创建工厂的代码是利用面向对象思想中<strong>多态思想（继承、重写、父类引用指向子类对象）</strong>来书写的。<br>接下来打印的Log如下：<br><figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">factory:</span> 奔驰E260L，弹射起步！</span><br><span class="line"><span class="symbol">factory:</span> 奔驰E260L，标配大灯打开。</span><br><span class="line"><span class="symbol">factory:</span> 奥迪A6L，平稳起步。</span><br><span class="line"><span class="symbol">factory:</span> 奥迪A6L，尊享华丽大灯打开！</span><br></pre></td></tr></table></figure></p>
+<p>到这里，我们最基本的<strong>工厂方法模式</strong>已经实现了。<br>但是到这里还有一个缺陷：<strong>商品实现与工厂实现一对一。</strong><br>也就是说每多出一个汽车类型、就要为其创建一个具体工厂实现。<br>为了解决这一问题，我们需要对工厂抽象、工厂细节进行优化，利用<strong>泛型</strong>和<strong>反射</strong>来实现<strong>商品实现与工厂实现多对一：</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">NewCarFactory</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 利用泛型来决定要生成的具体商品</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clz 具体商品的类名class</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> &lt;T&gt; 具体商品的类名</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 具体商品类</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> &lt;T extends CarProduct&gt; T createProduct(<span class="class"><span class="keyword">Class</span>&lt;<span class="title">T</span>&gt; <span class="title">clz</span>);</span></span><br><span class="line"><span class="class">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>上面代码就是经过优化的抽象工厂，创建方法增加了一个参数，决定了要创建的具体商品。<br>接下来是工厂的具体细节，应该具备创建任意商品的功能：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">CarConcreteFactory</span> <span class="keyword">extends</span> <span class="title">NewCarFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public &lt;<span class="type">T</span> <span class="keyword">extends</span> <span class="type">CarProduct</span>&gt; <span class="type">T</span> createProduct(<span class="type">Class</span>&lt;<span class="type">T</span>&gt; clz) &#123;</span><br><span class="line">        <span class="type">CarProduct</span> product = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            product = (<span class="type">CarProduct</span>) <span class="type">Class</span>.forName(clz.getName()).newInstance();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (<span class="type">Exception</span> e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (<span class="type">T</span>) product;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们用参数得到类名，然后通过反射来创建对应的类。<br>这样子我们只要有这么一个工厂细节，就能应对所有的商品创建。<br>写一下测试代码：<br><figure class="highlight pony"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建通用汽车工厂</span></span><br><span class="line"><span class="type">NewCarFactory</span> carFactory = <span class="function"><span class="keyword">new</span> <span class="title">CarConcreteFactory</span>();</span></span><br><span class="line"><span class="function"><span class="comment">//创建奔驰E260L</span></span></span><br><span class="line"><span class="function"><span class="title">BenzE260L</span> <span class="title">benzE260L</span> = <span class="title">carFactory</span>.<span class="title">createProduct</span>(<span class="type">BenzE260L</span>.class);</span></span><br><span class="line"><span class="function"><span class="comment">//创建奥迪A6L</span></span></span><br><span class="line"><span class="function"><span class="title">AudiA6L</span> <span class="title">audiA6L</span> = <span class="title">carFactory</span>.<span class="title">createProduct</span>(<span class="type">AudiA6L</span>.class);</span></span><br><span class="line"><span class="function"><span class="comment">//测试</span></span></span><br><span class="line"><span class="function"><span class="title">benzE260L</span>.<span class="title">drive</span>();</span></span><br><span class="line"><span class="function"><span class="title">audiA6L</span>.<span class="title">drive</span>();</span></span><br><span class="line"><span class="function"><span class="title">benzE260L</span>.<span class="title">openHeadlamps</span>();</span></span><br><span class="line"><span class="function"><span class="title">audiA6L</span>.<span class="title">openHeadlamps</span>();</span></span><br></pre></td></tr></table></figure></p>
+<p>只有一个工厂，生产出了不同类型的汽车。<br><figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">factory:</span> 奔驰E260L，弹射起步！</span><br><span class="line"><span class="symbol">factory:</span> 奥迪A6L，平稳起步。</span><br><span class="line"><span class="symbol">factory:</span> 奔驰E260L，标配大灯打开。</span><br><span class="line"><span class="symbol">factory:</span> 奥迪A6L，尊享华丽大灯打开！</span><br></pre></td></tr></table></figure></p>
+<p>结果是一致的。<br>两种实现方式都可以，利用<strong>反射</strong>的方式更简洁而已。<br>而且上面一对一的写法，还有一个名字：<strong>多工厂方法模式</strong>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>工厂方法模式</strong>对于大家来说是非常好理解的一个模式，即便是第一次听说，只要读者懂点Java知识，理解这个模式绝对不难。<br><strong>工厂方法模式</strong>也存在缺陷：每次我们添加新的商品时，都要创建新的类。<br>如果你辞职了，让不懂<strong>工厂方法模式</strong>的人接手了，这简直是折磨，因为虽然解耦了，但是代码复杂度也随之提升了。<br>是否使用<strong>工厂方法模式</strong>，需要设计者，你，来决定。</p>
+<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><p>《Android源码设计模式解析与实战》 何红辉、关爱民 著</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/15/Design-Clone/" rel="next" title="程序运行更高效-原型模式">
+                <i class="fa fa-chevron-left"></i> 程序运行更高效-原型模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/Android_Interview-Experience/" rel="prev" title="Android面试技能点">
+                Android面试技能点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">孟远</p>
+              <p class="site-description motion-element" itemprop="description">一名Android开发小将</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模式介绍"><span class="nav-number">1.</span> <span class="nav-text">模式介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">2.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式构成"><span class="nav-number">3.</span> <span class="nav-text">模式构成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式示例"><span class="nav-number">4.</span> <span class="nav-text">模式示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">6.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟远</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
