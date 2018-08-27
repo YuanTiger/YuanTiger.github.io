@@ -252,6 +252,251 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/03/Android_even_distribution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟远">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="孟远">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/03/Android_even_distribution/" itemprop="url">Android事件分发机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-03T16:43:57+08:00">
+                2017-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一-说些废话"><a href="#一-说些废话" class="headerlink" title="一.说些废话"></a>一.说些废话</h2><p>Android事件分发真的非常非常重要，几乎所有的滑动冲突以及点击冲突都需要深刻了解该机制才可以解决问题。所以我希望大家可以仔细阅读该篇文章并且自己手动来实验，一定要自己打断点看看源码，不管干什么都要下功夫不是吗？    </p>
+<p>虽然重要，但其实Android事件分发机制也很简单，只要理解了Android事件分发的三个方法，以及传递的流程，你就可以轻松掌握Android事件分发机制。    </p>
+<p>在开始之前，再说一下事件流：    </p>
+<p>事件流指的是一次完整的触摸事件，一次完整的触摸事件应该包括是:     </p>
+<p><code>down（一次按下）--&gt;move move move（多次滑动）.....--&gt;up（一次抬起）</code>      </p>
+<p>所以事件流总是以down事件为开端，以up事件为终止。        </p>
+<p>那么接下来就正式开始吧！        </p>
+<h2 id="二-重要方法"><a href="#二-重要方法" class="headerlink" title="二. 重要方法"></a>二. 重要方法</h2><p>首先看这三个方法的名称以及拥有情况：         </p>
+<font color="red">注意：类型不同，方法名相同，源码并不一致</font>     
+
+
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th style="text-align:center">Activity</th>
+<th style="text-align:center">ViewGroup</th>
+<th style="text-align:center">View</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dispatchTouEvent</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">true</td>
+</tr>
+<tr>
+<td>onInterceptTouchEvent</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">false</td>
+</tr>
+<tr>
+<td>onTouchEvent</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">true</td>
+</tr>
+</tbody>
+</table>
+<p>true代表拥有，false代表没有此方法     </p>
+<p>如果想要了解Android的事件分发机制，就必须先了解这三个方法      </p>
+<ul>
+<li><p><code>dispatchTouEvent()</code>      </p>
+<p>  事件的分发方法，用来分发事件，在Activity、ViewGroup、View中都有该方法。</p>
+</li>
+<li><p><code>onInterceptTouchEvent()</code>       </p>
+<p>  事件的拦截方法，只有ViewGroup有该方法。</p>
+</li>
+<li><p><code>onTouchEvent()</code>      </p>
+<p>  事件的响应,当该事件属于我时，会执行该方法，返回true代表消费事件，返回false代表不消费事件并将该事件向外传递。</p>
+</li>
+</ul>
+<p>三个方法的含义知道了，这很easy，没错，就三个方法而已。接下来让我们深入分析：       </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/back_I_begin_zb.jpg" alt=""></p>
+<h2 id="三-具体案例"><a href="#三-具体案例" class="headerlink" title="三. 具体案例"></a>三. 具体案例</h2><p>首先，我们来想象一个简单的布局             </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91_0.png" alt="布局">              </p>
+<p>这个布局很简单,FrameLayout1的中间放了一个FrameLayout2，FrameLayout2的中间放了一个Button。       </p>
+<p>我在各个布局当中重写了所有事件响应的方法，并且没有修改任何返回值，接下来我要点击Button了！      </p>
+<p>我点！      </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91_1.png" alt="我点">     </p>
+<p>首先接收到事件的是Activity,接下来事件传递到F1,F2,最后传递到Button的onTouchEvent被消费，很好理解，因为<strong>事件由外向里传递</strong>        </p>
+<p>接下来我们就着这个简单的按下事件，来分析一源码         </p>
+<h3 id="1、Activity"><a href="#1、Activity" class="headerlink" title="1、Activity"></a>1、Activity</h3><h4 id="1-dispatchTouchEvent"><a href="#1-dispatchTouchEvent" class="headerlink" title="(1) dispatchTouchEvent()"></a>(1) <code>dispatchTouchEvent()</code></h4><p>现在以debug的模式来看源码。      </p>
+<p>我的源码是Android－23。        </p>
+<p>首先接收到事件的是就是acitivity，所以我们把断点就放在Activity的<code>dispatchTouchEvent()</code>方法中       </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91_2.png" alt="">      </p>
+<p>然后debug模式运行项目，点击下一步进入Activity的<code>dispatchTouchEvent()</code>的源码中：      </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91_3.png" alt="">      </p>
+<p>上面的注释大概说的是：你可以重写此方法在所有窗体接收到事件之前将其拦截，如果不需要拦截，则保持原样。       </p>
+<p>简单来说呢，就是：<strong>我可以重写该方法修改返回值使整个Activity都无法响应事件。</strong>       </p>
+<p>如果我在Activity中重写该方法并修改了它的返回值，不管将该方法的返回值改为true或者false，该事件都消失，不会再向下传递（可怕）。        </p>
+<p><strong>所以不要修改Activity的<code>dispatchTouchEvent()</code>的默认返回值。</strong>         </p>
+<p>接下来我们来分析上面的代码，首先是判断事件是否是down事件，如果是的话执行了<code>onUserInteraction()</code>。       </p>
+<p>这个方法是个空实现，我们可以在Activity中重写该方法。这里你要想到的是，因为down事件是一个事件流的开端，并且这个方法放在了分发之前，在最上端，所以我们可以在<code>onUserInteraction()</code>中做一些事件响应开始的操作。          </p>
+<p>接下来执行了Window的<code>superDispatchTouchEvent()</code>,点进去你会发现Window中的该方法是一个空实现，但是根据断点进去可以直接进到它的实现类：PhoneWindow（这也是断点的一个好处不是吗）。那么我们来看看PhoneWindow的：  </p>
+<p><code>superDispatchTouchEvent()</code>：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">return</span> mDecor.<span class="title">superDispatchTouchEvent</span><span class="params">(event)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>代码就一行，调用了Decor类的<code>superDispatchTouchEvent()</code>       </p>
+<p>但是!But!But,oh no!What’s Decor?          </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E6%83%A8%E4%B8%8D%E5%BF%8D%E7%9D%B9.png" alt="">       </p>
+<p><a href="http://www.jianshu.com/p/687010ccad66" target="_blank" rel="noopener">这里是一篇讲解Decor类的文章</a>，我也简单说一下：       </p>
+<p>为什么Activity可以利用<code>setContentView()</code>来设置布局？谁是容器？         </p>
+<p>没错，就是Decor。我们查看Decor会发现，它是PhoneWindow的内部类，继承自FrameLayout。         </p>
+<p>FrameLayout？？难道我们<code>setContentView()</code>最终是调用了<code>Decor.addView()</code>吗？？      </p>
+<p>这里我可以告诉你：虽然不是，但是原理就是这样的！        </p>
+<p>看下面这张图片就会明白顶层布局的原理了：       </p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1734948-cd6dd09d50cb0bb5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="">      </p>
+<p>titleBar就是标题栏，main.xml就是我们设置的布局文件，而最外层是Decor。      </p>
+<p>好了，就到这里。对Android窗体感兴趣的小伙伴，快去看看<a href="http://www.jianshu.com/p/687010ccad66" target="_blank" rel="noopener">这篇讲解Decor类的文章</a>。        </p>
+<p>我们接着查看源码，你会发现<code>mDecor.superDispatchTouchEvent(event)</code>最终调用的是ViewGroup的<code>dispatchTouchEvent()</code>。</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    Decor类的superDispatchTouchEvent</span></span><br><span class="line"><span class="comment">    注意Decor类继承自FrameLayout</span></span><br><span class="line"><span class="comment">    所以super指的即是FrameLayout</span></span><br><span class="line"><span class="comment">    但是FrameLayout没有重写该方法，查看源码会直接跳转至ViewGroup类</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">return</span> <span class="keyword">super</span>.<span class="title">dispatchTouchEvent</span><span class="params">(event)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里，Activity已经成功将事件传递给ViewGroup，接下来将由ViewGroup来将事件一层一层传递至内部。</p>
+<h4 id="2-onTouchEvent"><a href="#2-onTouchEvent" class="headerlink" title="(2) onTouchEvent()"></a>(2) <code>onTouchEvent()</code></h4><p>各位看官，请拉上去回头看Activity的<code>dispatchTouchEvent()</code>的最后一行：<br><code>return onTouchEvent(ev)</code><br>是这样的不？<br>也就是在<code>getWindow.superDispatchTouchEvent()</code>返回false时，将执行最后一行调用Activity的<code>onTouchEvent()</code>，所以Activity的<code>onTouchEvent()</code>的调用时机，是和接下来ViewGroup的事件分发有着密切关系的。<br>简单来说：只有当Activity下的所有View（ViewGroup）的<code>onTouchEvent()</code>都不消费事件时，才会调用Activity的<code>onTouchEvent()</code>。</p>
+<h3 id="2、ViewGroup"><a href="#2、ViewGroup" class="headerlink" title="2、ViewGroup"></a>2、ViewGroup</h3><p>我们很顺利地来到了ViewGroup的<code>dispatchTouchEvent()</code>方法当中。<br>但是，在分析源码之前，我想让各位看官先明白，现在调用ViewGroup的<code>dispatchTouchEvent()</code>方法的变量，指的是谁？是我们的FrameLayou_ONE吗？<br>看官:”你他喵的484傻，Activity源码中明明写着<code>mDecor.superDispatchTouchEvent(event)</code>，很明显是Activity调用了Decor的<code>dispatchTouchEvent()</code>，这个ViewGroup肯定是Decor啊！能不能讲重点，这么多废话!“        </p>
+<p>我：“…..”    </p>
+<p><img src="http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E9%80%80%E5%87%BA%E8%A3%85%E9%80%BC%E7%95%8C.jpg" alt=""><br>行吧，提这个我是想再给各位看官强调一下，我们的layout文件仅仅是add到了系统顶层布局中，所以接收到事件的肯定是系统的顶层布局，而不是我们的layout中的布局。这个如何证实呢？<br>各位看官可以在ViewGroup的<code>dispatchTouchEvent()</code>打个断点，然后看官就会发现，这个方法执行了很多次，每次都可以查看一下变量this，看看到底是什么？比如第一次的this：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com<span class="selector-class">.android</span><span class="selector-class">.internal</span><span class="selector-class">.policy</span><span class="selector-class">.PhoneWindow</span><span class="variable">$DecorView</span>&#123;b9a23df V<span class="selector-class">.E</span>...... R....... <span class="number">0</span>,<span class="number">0</span>-<span class="number">1080</span>,<span class="number">1920</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>好了，接下来我们就看看ViewGroup的事件分发机制吧!</p>
+<h4 id="1-dispatchTouchEvent-1"><a href="#1-dispatchTouchEvent-1" class="headerlink" title="(1)dispatchTouchEvent()"></a>(1)<code>dispatchTouchEvent()</code></h4><p>ViewGroup的<code>dispatchTouchEvent()</code>内容很多，有210行左右，有兴趣的同学可以打开ViewGroup去查看。我这里就按着步骤一部分一部分的贴出来。有些部分我也看不大懂，不过有很多的注释，阅读起来还是很方便的：<br>首先执行的是这个判断，判断是否分发事件，如果该方法返回false，则此次事件则会被丢弃，因为<code>dispatchTouchEvent()</code>的所有代码都包含在这个判断里！<br><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="comment">(onFilterTouchEventForSecurity(ev)</span>)&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是<code>onFilterTouchEventForSecurity(ev)</code>这个判断的源码：<br>根据方法名和注释来理解，这是一个触摸事件安全过滤器。基本上这个方法都会返回true，不会发生系统丢弃事件的情况。<br><figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Filter the touch event to apply security policies.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> event The motion event to be filtered.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> True if the event should be dispatched, false if the event should be dropped.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> #getFilterTouchesWhenObscured</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> onFilterTouchEventForSecurity(MotionEvent event) &#123;</span><br><span class="line">    <span class="comment">//noinspection RedundantIfStatement</span></span><br><span class="line">    <span class="keyword">if</span> ((mViewFlags &amp; FILTER_TOUCHES_WHEN_OBSCURED) != <span class="number">0</span>&amp;&amp; (event.getFlags() &amp; MotionEvent.FLAG_WINDOW_IS_OBSCURED) != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Window is obscured, drop this touch.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二件事情：如果是down事件（因为down事件是开端），清除上次事件流的处理结果和状态。<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Handle an initial down.</span><br><span class="line">if (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">    // Throw away <span class="literal">all</span> previous <span class="keyword">state</span> when starting a new touch gesture.</span><br><span class="line">    // The framework may have dropped the up or cancel event <span class="keyword">for</span> the previous gesture</span><br><span class="line">    // due <span class="keyword">to</span> an app switch, ANR, or some other <span class="keyword">state</span> change.</span><br><span class="line">    cancelAndClearTouchTargets(ev);</span><br><span class="line">    resetTouchState();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第三件事情：检查事件拦截是否拦截。<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Check for interception.</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN|| mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp;FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!disallowIntercept) &#123;</span><br><span class="line">          intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">          ev.setAction(action); <span class="comment">// restore action in case it was changed</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    intercepted = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// There are no touch targets and this action is not an initial down</span></span><br><span class="line">    <span class="comment">// so this view group continues to intercept touches.</span></span><br><span class="line">    intercepted = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第四件事情：检查事件取消。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// <span class="keyword">Check</span> <span class="keyword">for</span> cancelation.</span><br><span class="line"><span class="keyword">final</span> <span class="built_in">boolean</span> canceled = resetCancelNextUpFlag(this)|| actionMasked == MotionEvent.ACTION_CANCEL;</span><br></pre></td></tr></table></figure></p>
+<p>第五件事情：如果没有被拦截，也没有被取消，就将此次事件分发给自己的下一级：子ViewGroup或者子View。<br>这里的分发逻辑相当复杂，有兴趣的看官可以去自行阅读源码，或者参考<a href="http://wangkuiwu.github.io/2015/01/04/TouchEvent-ViewGroup/" target="_blank" rel="noopener">这篇文章</a>。<br><figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (!canceled &amp;&amp; !intercepted) &#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在最后，又进行一次检查取消标记，做了相应的处理:<br><figure class="highlight irpf90"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Update list of <span class="keyword">touch</span> targets for <span class="keyword">pointer</span> up or cancel, <span class="keyword">if</span> needed.</span><br><span class="line"><span class="keyword">if</span> (canceled|| actionMasked == MotionEvent.ACTION_UP|| actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">    resetTouchState();</span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_UP) &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="built_in">int</span> actionIndex = ev.getActionIndex();</span><br><span class="line">    <span class="keyword">final</span> <span class="built_in">int</span> idBitsToRemove = <span class="number">1</span> &lt;&lt; ev.getPointerId(actionIndex);</span><br><span class="line">    removePointersFromTouchTargets(idBitsToRemove);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>。</p>
+<h4 id="2-onInterceptTouchEvent"><a href="#2-onInterceptTouchEvent" class="headerlink" title="(2) onInterceptTouchEvent()"></a>(2) <code>onInterceptTouchEvent()</code></h4><p>事件流的每个事件都是由外层向里层依次传递的，有时候我们希望虽然点击的是内部button，但是做出相应的是button的容器，而不是button，也就是说在事件传递到button之前，将事件拦截并且消费，这也就是事件拦截的作用。<br>事件拦截的方法源码很简单很简单：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>默认不拦截事件，如果拦截事件将返回值改为true，事件将被拦截并交给拦截事件的ViewGroup的<code>onTouchEvent()</code>处理。<br>这个方法是ViewGroup独有的，难道Activity和View就无法拦截事件了吗？<br>首先，Activity的<code>dispatchTouchEvent()</code>的返回值不可轻易更改，更改之后整个Activity都无法响应事件，所以如果我们需要Activity做拦截操作，可以修改Activity的<code>dispatchTouchEvent()</code>的逻辑，使之满足某些条件时修改返回值，否则不做修改。这样就可以使Activity进行事件的拦截。<br>而至于View就更简单了，View本身就是最小的控件，事件传递到View是已经无法向下传递，所以无需拦截。</p>
+<h4 id="3-onTouchEvent"><a href="#3-onTouchEvent" class="headerlink" title="(3) onTouchEvent()"></a>(3) <code>onTouchEvent()</code></h4><p>ViewGroup类中没有重写<code>onTouchEvent()</code>，由于ViewGroup继承了View，所以View和ViewGroup的<code>onTouchEvent()</code>完全一致。<br>这里我们再debug一下我们的demo：<br>将断点打到View的<code>onTouchEvent()</code>的第一行，然后点击button，会发现断点执行，而this指代的是我们的Button，而不是上层的ViewGroup，也就是说上层中根本没有执行<code>onTouchEvent()</code>，第一次执行<code>onTouchEvent()</code>时，事件已经分发到了View。<br>所以在这里，我们需要理解到这样一个地步：       </p>
+<p><strong>事件从Activity的<code>dispatchTouchEvent()</code>开始，首先分发到ViewGroup（DecorView、我们自己的Layout布局文件等）的<code>dispatchTouchEvent()</code>，并且在每次分发的时候会调用<code>onInterceptTouchEvent()</code>判断事件是否被拦截，如果事件被拦截则会执行将事件拦截的ViewGroup的<code>onTouchEvent()</code>方法并将接下来的整个事件流，都交给自己来处理，不会重复执行<code>onInterceptTouchEvent()</code>，如果没有拦截事件，最终将事件成功传递给View，View将调用onTouchEvent()将事件消费。</strong>    </p>
+<p>上面这段话希望每位耐心看到这里的读者都能理解，在这里还需要解释一下的是ViewGroup拦截事件交给<code>onTouchEvent()</code>之后，如果<code>onTouchEvenet()</code>返回了false（ViewGroup的<code>onTouchEvent()</code>默认返回false），则代表不消费此事件，则此次事件将逐层向上传递，调用每一层的<code>onTouchEvnet()</code>，如果中途所有的<code>onTouchEvent()</code>都返回false，那么事件将最终传递到Activity的<code>onTouchEvent()</code>中，到这里事件完成整个传递过程（向里传递，里不要，再传出来），不管Activity的<code>onTouchEvent()</code>返回什么结果，事件都将消失。</p>
+<h3 id="3、View"><a href="#3、View" class="headerlink" title="3、View"></a>3、View</h3><h4 id="1-dispatchTouchEvent-2"><a href="#1-dispatchTouchEvent-2" class="headerlink" title="(1)dispatchTouchEvent()"></a>(1)<code>dispatchTouchEvent()</code></h4><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> boolean <span class="title">dispatchTouchEvent</span>(<span class="params">MotionEvent <span class="keyword">event</span></span>) </span>&#123;</span><br><span class="line">       boolean result = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (mInputEventConsistencyVerifier != <span class="literal">null</span>) &#123;</span><br><span class="line">            mInputEventConsistencyVerifier.onTouchEvent(<span class="keyword">event</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        final <span class="keyword">int</span> actionMasked = <span class="keyword">event</span>.getActionMasked();</span><br><span class="line">        <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">            <span class="comment">// Defensive cleanup for new gesture</span></span><br><span class="line">            stopNestedScroll();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (onFilterTouchEventForSecurity(<span class="keyword">event</span>)) &#123;</span><br><span class="line">            <span class="comment">//noinspection SimplifiableIfStatement</span></span><br><span class="line">            ListenerInfo li = mListenerInfo;</span><br><span class="line">            <span class="keyword">if</span> (li != <span class="literal">null</span> &amp;&amp; li.mOnTouchListener != <span class="literal">null</span></span><br><span class="line">                    &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED</span><br><span class="line">                    &amp;&amp; li.mOnTouchListener.onTouch(<span class="keyword">this</span>, <span class="keyword">event</span>)) &#123;</span><br><span class="line">                result = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!result &amp;&amp; onTouchEvent(<span class="keyword">event</span>)) &#123;</span><br><span class="line">                result = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!result &amp;&amp; mInputEventConsistencyVerifier != <span class="literal">null</span>) &#123;</span><br><span class="line">            mInputEventConsistencyVerifier.onUnhandledEvent(<span class="keyword">event</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Clean up after nested scrolls if this is the end of a gesture;</span></span><br><span class="line">        <span class="comment">// also cancel it if we tried an ACTION_DOWN but we didn't want the rest</span></span><br><span class="line">        <span class="comment">// of the gesture.</span></span><br><span class="line">        <span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_UP ||</span><br><span class="line">                actionMasked == MotionEvent.ACTION_CANCEL ||</span><br><span class="line">                (actionMasked == MotionEvent.ACTION_DOWN &amp;&amp; !result)) &#123;</span><br><span class="line">            stopNestedScroll();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上则是View的部分源码，我们只需要理解的是：在满足了相应条件之后，View的<code>dispatchTouchEvent()</code>主动调用了自己的<code>onTouchEvent()</code>，而View的<code>onTouchEvenet()</code>默认返回true消费事件。</p>
+<h4 id="2-onTouchEvent-1"><a href="#2-onTouchEvent-1" class="headerlink" title="(2)onTouchEvent()"></a>(2)<code>onTouchEvent()</code></h4><p><code>onTouchEvent</code>是用来消费事件的，在Activity、ViewGroup和View三者当中，只有View的<code>onTouchEvent()</code>默认返回true，代表消费事件。虽然ViewGroup和View的<code>onTouchEvent()</code>完全相同，但是其中存在某些逻辑判断，致使ViewGroup的返回值为false。<br>推荐做法还是将事件处理的逻辑放到<code>onTouchEvent()</code>当中，而分发和拦截只发挥自己应有的作用即可。<br>这里我就不贴View(ViewGroup)的<code>onTouchEvent()</code>的源码了，想看的同学可自行打开View搜索<code>onToucEvent()</code>。</p>
+<h2 id="四-总结"><a href="#四-总结" class="headerlink" title="四.总结"></a>四.总结</h2><p>到这里，三者的各个方法的分析已经结束了，我想最后再简单总结一下：               </p>
+<p>1、Activity的<code>dispatchTouchEvent()</code>不可修改返回值，否则将导致整个Activity都无法接收事件，不管修改后返回true或是false。    </p>
+<p>2、在Activity中我们可以重写<code>onUserInteraction()</code>方法，来在整个事件流响应之前做自己想做的事情。    </p>
+<p>3、一个事件的传递过程默认总是从Activity的<code>dispatchTouchEvent()</code>开始，到View的<code>onTouchEvent()</code>结束，注意，这里是默认。     </p>
+<p>4、ViewGroup可以拦截事件交给自己的<code>onTouchEvent()</code>处理，如果自己的<code>onTouchEvent()</code>返回false，则事件不会消失，会继续向外层传递，如果一直没有被消费，那么事件传递到Activity的<code>onTouchEvent()</code>才会消失。      </p>
+<p>5、ViewGroup的<code>onInterceptTouchEvent()</code>不会在每次事件都调用，整个事件流只会在down事件或是第一次接触到事件时调用，所以不要在该方法中做事件逻辑处理。       </p>
+<p>6、三者的<code>onTouchEvent()</code>只有View的<code>onTouchEvent()</code>默认消费事件。       </p>
+<hr>
+<p>其实还有很多更深入的东西，这篇文章只是浅显地讲解了一下Android的事件分发机制，希望对各位看官有些帮助！</p>
+<blockquote>
+<p>有任何问题或疑问都可以联系我：<a href="mailto:mengyuanzz@126.com" target="_blank" rel="noopener">mengyuanzz@126.com</a></p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/03/Hello_GitHub+Hexo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -413,7 +658,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
